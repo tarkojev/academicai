@@ -52,3 +52,6 @@ python run_efficiency.py --model_name <"hf_model_name"> --out runs/eff_<"model_n
 ### Example:
 python run_efficiency.py --model_name bert-base-uncased --out runs/eff_bert.json
 python run_efficiency.py --model_name distilbert-base-uncased --out runs/eff_distilbert.json
+
+## Confirm Python version
+check_version.py has no functionality related to the project, and is solely used as a manual python version validator for debugging purposes.
