@@ -3,6 +3,12 @@
 ## Install
 Run pip install -r src/requirements.txt to install necessary libraries
 
+## Make baseline against full dataset:
+python run_full_dataset_train.py --model <"model_name"> --train_seed <"seed_random_number"> --epochs <"n_of_epochs> --batch_size <"n_of_batch_size">
+
+### Example:
+python run_full_dataset_train.py --model distilbert-base-uncased --train_seed 0 --epochs 2 --batch_size 16
+
 ## Train teachers:
 python run_teachers.py --support_seed <"support_seed_int"> --n_per_class <"n_per_class_int"> --train_seeds <"train_seed_int_list"> \
   --models <"hf_teacher_model_name_list">
@@ -47,11 +53,11 @@ python run_evaluation.py --run teacher_t5-small_fs10_supp123
 python run_evaluation.py --run student_distilbert-base-uncased_fs10_supp123
 
 ## Run Efficiency benchmark:
-python run_efficiency.py --model_name <"hf_model_name"> --out runs/eff_<"model_name_alias">.json
+python run_cost_analysis.py --model_name <"hf_model_name"> --out runs/eff_<"model_name_alias">.json
 
 ### Example:
-python run_efficiency.py --model_name bert-base-uncased --out runs/eff_bert.json
-python run_efficiency.py --model_name distilbert-base-uncased --out runs/eff_distilbert.json
+python run_cost_analysis.py --model_name bert-base-uncased --out runs/eff_bert.json
+python run_cost_analysis.py --model_name distilbert-base-uncased --out runs/eff_distilbert.json
 
 ## Confirm Python version
 check_version.py has no functionality related to the project, and is solely used as a manual python version validator for debugging purposes.
