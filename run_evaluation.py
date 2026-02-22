@@ -15,23 +15,31 @@ import argparse
 import numpy as np
 from utils import label_flipping_rate, metrics_from_logits, save_json
 
+# Load logits from a run
+def load_logits_like(run_dir: str) -> np.ndarray:
+    p_path = os.path.join(run_dir, "test_probs.npy")
+    if os.path.exists(p_path):
+        p = np.load(p_path)
+        return np.log(p + 1e-12)
+
+    l_path = os.path.join(run_dir, "test_logits.npy")
+    if not os.path.exists(l_path):
+        raise FileNotFoundError(f"Missing both test_probs.npy and test_logits.npy in {run_dir}")
+    return np.load(l_path)
+
+
 # Collect metrics from multiple student runs and compute aggregated results
 def collect(run_dirs):
     accs, f1s = [], []
     preds_all = []
-
     for d in run_dirs:
-        logits = np.load(os.path.join(d, "test_logits.npy"))
+        logits_like = load_logits_like(d)
         labels = np.load(os.path.join(d, "test_labels.npy"))
-
-        m = metrics_from_logits(logits, labels)
+        m = metrics_from_logits(logits_like, labels)
         accs.append(m["accuracy"])
         f1s.append(m["f1_macro"])
-
-        preds_all.append(logits.argmax(axis=1))
-
+        preds_all.append(logits_like.argmax(axis=1))
     pred_matrix = np.stack(preds_all, axis=0)
-
     return {
         "accuracy_mean": float(np.mean(accs)),
         "accuracy_std": float(np.std(accs, ddof=1)) if len(accs) > 1 else 0.0,
