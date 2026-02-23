@@ -1,13 +1,13 @@
 """
-This file contains utility functions and classes for the AG News classification task, including:
-- Dataset loading and processing for AG News- Hardware detection and random seed setting for reproducibility
-- Metrics computation (accuracy, F1-macro) and stability analysis (label flipping rate)
-- Model efficiency calculations (parameter count, estimated size in MB, latency benchmarking)
-- Probability conversions and temperature scaling for knowledge distillation
-- JSON saving utility for results and metadata
+This file implements the full dataset training and evaluation script:
+- It defines a custom T5 encoder-based classifier for the AG News task.
+- It contains a training loop that trains the model on the full training set.
+- It has a prediction function that runs inference on the test set and computes metrics.
+- It includes efficiency benchmarking that measures parameter count, model size, and inference latency.
+- Results are saved into a structured JSON file along with logits and labels for later analysis.
 """
 
-# Imported libraries
+
 import time
 import json
 import random
@@ -29,10 +29,8 @@ class AGNewsDataset(Dataset):
         self.labels = labels
         self.tokenizer = tokenizer
         self.max_len = max_len
-
     def __len__(self):
         return len(self.texts)
-
     def __getitem__(self, item):
         text = str(self.texts[item])
         label = self.labels[item]
@@ -68,19 +66,15 @@ def make_loader(dataset, tokenizer, batch_size: int, max_len: int, shuffle: bool
 
 # Few-Shot Support Set Sampling
 def sample_few_shot_support_set(dataset, n_per_class: int, seed: int):
-    """Samples N examples per class and returns BOTH the dataset and the indices."""
     random.seed(seed)
     np.random.seed(seed)
-    
     all_indices = np.arange(len(dataset))
     labels = np.array(dataset["label"])
-    
     support_indices = []
-    for label_idx in range(4): # AG News has 4 classes
+    for label_idx in range(4):  # AG News has 4 classes
         label_indices = all_indices[labels == label_idx]
         selected = np.random.choice(label_indices, n_per_class, replace=False)
-        support_indices.extend(selected.tolist()) # Convert to list for JSON compatibility
-    
+        support_indices.extend(selected.tolist()) # for shuffling
     random.shuffle(support_indices)
     return dataset.select(support_indices), support_indices
 
@@ -104,14 +98,14 @@ def set_seed(seed: int, deterministic: bool = False) -> None:
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
 
-# Accuracy and F1-Macro 
+# Accuracy and F1-Macro
 def metrics_from_logits(logits: np.ndarray, labels: np.ndarray) -> Dict[str, float]:
     preds = np.argmax(logits, axis=1)
     acc = accuracy_score(labels, preds)
     f1 = f1_score(labels, preds, average="macro", zero_division=0)
     return {"accuracy": float(acc), "f1_macro": float(f1)}
 
-# Stability analysis 
+# Stability analysis
 def label_flipping_rate(pred_matrix: np.ndarray) -> float:
     if pred_matrix.shape[0] < 2:
         return 0.0
@@ -137,24 +131,44 @@ def estimate_model_size_mb(model: nn.Module) -> float:
         buffer_size += buffer.nelement() * buffer.element_size()
     return (param_size + buffer_size) / 1024**2
 
-# Inference latency benchmarking
+def _sync_device(device: torch.device) -> None:
+    if device.type == "cuda":
+        torch.cuda.synchronize()
+    elif device.type == "mps":
+        torch.mps.synchronize()
+
+# Inference latency benchmarking (ms/sample)
 def latency_ms(model, tokenizer, texts, device, max_len=128, n_warmup=10, n_iters=30):
     model.eval()
+    model.to(device)
+
     def inference_run(t):
-        inputs = tokenizer(t, return_tensors="pt", truncation=True, padding="max_length", max_length=max_len).to(device)
+        inputs = tokenizer(
+            t,
+            return_tensors="pt",
+            truncation=True,
+            padding="max_length",
+            max_length=max_len
+        )
+        inputs = {k: v.to(device) for k, v in inputs.items()}
         with torch.no_grad():
-            model(**inputs)
-    for i in range(min(n_warmup, len(texts))):
+            out = model(**inputs)
+            if hasattr(out, "logits"):
+                _ = out.logits
+
+    # Warmup
+    warm_n = min(n_warmup, len(texts))
+    for i in range(warm_n):
         inference_run(texts[i])
+        _sync_device(device)
+
+    # Timed runs
     times = []
     for i in range(n_iters):
         t = texts[i % len(texts)]
         start = time.perf_counter()
         inference_run(t)
-        if device.type == "cuda":
-            torch.cuda.synchronize()
-        elif device.type == "mps":
-            torch.mps.synchronize()
+        _sync_device(device)
         end = time.perf_counter()
         times.append((end - start) * 1000.0)
     return float(np.mean(times))
@@ -173,6 +187,5 @@ def apply_temperature_to_probs(probs: np.ndarray, tau: float) -> np.ndarray:
 
 # Saving results to JSON
 def save_json(path: str, obj: dict) -> None:
-    """Saves dictionary results to a JSON file."""
     with open(path, "w", encoding="utf-8") as f:
         json.dump(obj, f, indent=2, ensure_ascii=False)

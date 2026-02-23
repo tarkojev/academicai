@@ -74,24 +74,38 @@ def main():
     ap.add_argument("--models", nargs="+", default=["bert-base-uncased", "distilbert-base-uncased", "t5-small"])
     ap.add_argument("--out", type=str, default="runs/eff_ensemble.json")
     args = ap.parse_args()
+    
     device = get_device()
     _, test_ds = load_ag_news()
-    texts = [test_ds[i]["text"] for i in range(min(50, len(test_ds)))]
-    params, size, latency = benchmark_ensemble(args.models, texts, device)
+    test_set_size = len(test_ds)
+    
+    bench_texts = [test_ds[i]["text"] for i in range(min(50, test_set_size))]
+    
+    params, size, latency = benchmark_ensemble(args.models, bench_texts, device)
+    
+    total_test_time_ms = latency * test_set_size
+    total_test_time_sec = total_test_time_ms / 1000.0
+    total_test_time_min = total_test_time_sec / 60.0
+
     res = {
         "models": args.models,
         "params": int(params),
         "size_mb": float(size),
         "latency_ms": float(latency),
+        "test_set_size": test_set_size,
+        "total_test_inference_sec": float(total_test_time_sec),
+        "total_test_inference_min": float(total_test_time_min),
         "device": str(device)
     }
+    
     save_json(args.out, res)
-    print("Ensemble Efficiency Summary")
-    print(f"Models:   {', '.join(args.models)}")
-    print(f"Params:   {params:,}")
-    print(f"Memory:   {size:.2f} MB")
-    print(f"Latency:  {latency:.2f} ms/sample")
-    print("="*30)
+    print("Ensemble cost benchmarking results:")
+    print(f"Models:          {', '.join(args.models)}")
+    print(f"Total Params:    {params:,}")
+    print(f"Memory Footprint: {size:.2f} MB")
+    print(f"Inference Latency: {latency:.2f} ms/sample")
+    print(f"Test Set Size:   {test_set_size} samples")
+    print(f"Total Run Time:  {total_test_time_sec:.2f} seconds (~{total_test_time_min:.2f} minutes)")
 
 if __name__ == "__main__":
     main()

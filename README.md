@@ -8,6 +8,20 @@
 ## Install libraries
 Run `pip install -r src/requirements.txt` to install necessary libraries.
 
+## Methods
+### Seeds
+The code uses two different types of seeds: 
+-  --support_seed: support seed `sample_few_shot_support_set` in `utils.py` uses `np.random.seed(seed)` and samples `n_per_class` examples per class 
+- --train_seed: training seed `set_seed()` in `utils.py` controls PyTorch randomness, model weight initialization and dataloader shuffling, and is used in `run_teachers.py`, `run_students.py` and `run_full_dataset_train.py`
+
+
+### Train/test split
+The code is using AG News default split from HuggingFace that is equal to 120,000 train and 7,600 test (approximately 93%/7% split).
+utilize the standard AG News partition which consists of 120,000 training and 7,600 test samples. 
+
+However, to simulate a few-shot environment, code takes random sampling from the training partition to create a 'Support Set' of only `N` samples per class. The remaining ~119,900+ samples in the training pool are discarded, and the model is evaluated against the full 7,600-sample test set.
+
+
 ## Make baseline against full dataset: `run_full_dataset_train.py`
 
 python run_full_dataset_train.py --model <"hf_model_name"> --train_seed <"seed:int"> --epochs <"epochs:int"> --lr <"lr:float"> \

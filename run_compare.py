@@ -92,6 +92,10 @@ def load_all_runs(runs_root: str) -> List[Dict[str, Any]]:
             continue
         rtype = detect_run_type(name)
         acc, f1 = extract_metrics(meta)
+        eff = meta.get("efficiency", {})
+        params = eff.get("params")
+        latency = eff.get("latency_ms")
+        size_mb = eff.get("size_mb")
         model = meta.get("model", None)
         if model is None:
             model = meta.get("student_model", None)
@@ -112,6 +116,10 @@ def load_all_runs(runs_root: str) -> List[Dict[str, Any]]:
             "ensemble_models": ensemble_models,
             "accuracy": acc,
             "f1_macro": f1,
+            "params": params,
+            "latency_ms": latency,
+            "size_mb": size_mb,
+            "ensemble_models": ensemble_models,
             "retain_ratio_vs_full": None,
             "train_seed": meta.get("train_seed"),
             "support_seed": meta.get("support_seed"),

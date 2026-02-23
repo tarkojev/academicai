@@ -22,7 +22,10 @@ from utils import (
     save_json,
     apply_temperature_to_probs,
     logits_to_probs,
-    get_device
+    get_device,
+    count_params,
+    estimate_model_size_mb,
+    latency_ms
 )
 
 # Averaging teacher probabilities with temperature scaling to get ensemble soft targets
@@ -58,6 +61,8 @@ def main():
     ap.add_argument("--student_model", type=str, required=True)
     ap.add_argument("--teacher_dirs", type=str, nargs="+", default=[])
     ap.add_argument("--ensemble_dir", type=str, default=None)
+    ap.add_argument("--bench_warmup", type=int, default=5)
+    ap.add_argument("--bench_iters", type=int, default=15)
     ap.add_argument("--n_per_class", type=int, default=10)
     ap.add_argument("--support_seed", type=int, default=123)
     ap.add_argument("--train_seed", type=int, default=42)
@@ -121,12 +126,42 @@ def main():
     test_logits, test_labels = predict_logits(student, tok, test_ds, device, args.batch_size, args.max_len)
     eval_metrics = metrics_from_logits(test_logits, test_labels)
 
+    # Efficiency benchmarking
+    params = count_params(student)
+    size_mb = estimate_model_size_mb(student)
+    bench_texts = [test_ds[i]["text"] for i in range(min(50, len(test_ds)))]
+    lat_ms = latency_ms(
+        model=student,
+        tokenizer=tok,
+        texts=bench_texts,
+        device=device,
+        max_len=args.max_len,
+        n_warmup=args.bench_warmup,
+        n_iters=args.bench_iters,
+    )
+    total_test_inference_est_sec = float(lat_ms * len(test_ds) / 1000.0)
     run_name = f"student_{args.student_model}_fs{args.n_per_class}_supp{args.support_seed}_seed{args.train_seed}_tau{args.tau}_a{args.alpha}".replace("/", "_")
     run_dir = os.path.join(args.out_dir, run_name)
     os.makedirs(run_dir, exist_ok=True)
     np.save(os.path.join(run_dir, "test_logits.npy"), test_logits)
     np.save(os.path.join(run_dir, "test_labels.npy"), test_labels)
-    save_json(os.path.join(run_dir, "meta.json"), {"metrics": eval_metrics})
+    save_json(os.path.join(run_dir, "meta.json"), {
+        "student_model": args.student_model,
+        "train_seed": args.train_seed,
+        "support_seed": args.support_seed,
+        "n_per_class": args.n_per_class,
+        "tau": args.tau,
+        "alpha": args.alpha,
+        "epochs": args.epochs,
+        "metrics": eval_metrics,
+        "efficiency": {
+            "params": params,
+            "size_mb": size_mb,
+            "latency_ms": lat_ms,
+            "total_test_inference_est_sec": total_test_inference_est_sec,
+            "device": str(device)
+        }
+    })
 
 if __name__ == "__main__":
     main()
