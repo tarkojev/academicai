@@ -12,7 +12,7 @@ import argparse
 from typing import Tuple
 import numpy as np
 import torch
-from torch import nn
+from torch import device, nn
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, T5EncoderModel
 from utils import (
     set_seed,
@@ -57,7 +57,7 @@ def train_full(model, loader, device, epochs, lr, grad_accum_steps=1, max_steps=
         model.train()
         for batch in loader:
             global_step += 1
-            inputs = {k: v.to(device) for k, v in batch.items() if k != "label"}
+            inputs = {k: v.to(device) for k, v in batch.items() if k not in ["label", "text"]}
             labels = batch["label"].to(device)
             
             logits = model(**inputs)
@@ -92,7 +92,7 @@ def predict_logits(model, tokenizer, ds, device, batch_size=16, max_len=128):
     all_logits = []
     all_labels = []
     for batch in loader:
-        inputs = {k: v.to(device) for k, v in batch.items() if k != "label"}
+        inputs = {k: v.to(device) for k, v in batch.items() if k not in ["label", "text"]}
         labels = batch["label"]
         logits = model(**inputs)
         if hasattr(logits, "logits"):

@@ -45,7 +45,7 @@ def predict_logits(model, tokenizer, ds, device, batch_size=16, max_len=128):
     all_logits = []
     all_labels = []
     for batch in loader:
-        inputs = {k: v.to(device) for k, v in batch.items() if k != "label"}
+        inputs = {k: v.to(device) for k, v in batch.items() if k not in ["label", "text"]}
         labels = batch["label"]
         logits = model(**inputs).logits
         all_logits.append(logits.cpu().numpy())
@@ -101,7 +101,7 @@ def main():
         idx0 = 0
         for batch in loader:
             bsz = batch["label"].size(0)
-            inputs = {k: v.to(device) for k, v in batch.items() if k != "label"}
+            inputs = {k: v.to(device) for k, v in batch.items() if k not in ["label", "text"]}
             labels = batch["label"].to(device)
             p_t = torch.from_numpy(ptau_t[idx0:idx0 + bsz]).to(device)
 
