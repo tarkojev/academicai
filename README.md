@@ -5,6 +5,7 @@
 - **Hardware Acceleration**: Supports **CUDA** (NVIDIA), **MPS** (Apple Silicon M1/M2/M3), and **CPU**.
 - The code automatically detects the best available hardware using the `get_device()` utility.
 
+## Install libraries
 Run `pip install -r src/requirements.txt` to install necessary libraries.
 
 ## Make baseline against full dataset: `run_full_dataset_train.py`
@@ -14,7 +15,7 @@ python run_full_dataset_train.py --model <"hf_model_name"> --train_seed <"seed:i
 
 - `--model <hf_model_name>`: HuggingFace model name (e.g. `distilbert-base-uncased`).
 - `--train_seed <seed:int>`: seed for full supervised training.
-- `--epochs <epochs:int>`: number of epochs over full train split (often 1–3 is enough).
+- `--epochs <epochs:int>`: number of epochs over full train split (approx: 1-3).
 - `--lr <lr:float>`: learning rate.
 - `--batch_size <batch_size:int>`: batch size.
 - `--max_len <max_len:int>`: max token length.
