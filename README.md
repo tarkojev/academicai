@@ -55,7 +55,7 @@ python run_ensemble.py --teacher_dirs runs/<"teacher_run_dir1"> runs/<"teacher_r
 
 - `--teacher_dirs runs/<teacher_run_dir...>`: list of teacher run folders to ensemble (must all share the same support/test ordering).
 - `--name <ensemble_run_name>`: name of the ensemble run folder to create under `runs/`.
-- `--also_support`: also store `support_probs.npy` for KD training (required if you want “stored ensemble then student”).
+- `--also_support`: also store `support_probs.npy` for KD training
 
 ### Example:
 python run_ensemble.py \
@@ -152,7 +152,7 @@ python run_compare.py --runs_root runs --out runs/comparison.csv --out_summary r
 python run_cost_analysis.py --model_name <hf_model_name> --out runs/eff_<model_tag>.json
 
 - `--model_name <hf_model_name>`: HuggingFace model name to benchmark (e.g. `bert-base-uncased`).
-- `--out runs/eff_<model_tag>.json`: output JSON path (you control the filename; convention: `eff_<something>.json`).
+- `--out runs/eff_<model_tag>.json`: output JSON path (convention: `eff_<something>.json`).
 
 ### Example:
 python run_cost_analysis.py --model_name bert-base-uncased --out runs/eff_bert.json

@@ -14,7 +14,7 @@ import numpy as np
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, T5ForConditionalGeneration
 from utils import load_ag_news, count_params, estimate_model_size_mb, save_json, get_device
 
-# Label texts used for T5 scoring in your teachers script
+# Label texts used for T5 scoring in the ensemble benchmarking
 T5_LABEL_TEXTS = ["world", "sports", "business", "sci tech"]
 
 # Benchmark an ensemble of models on a set of texts, returning total params, size, and latency
