@@ -16,8 +16,7 @@ The code uses two different types of seeds:
 
 
 ### Train/test split
-The code is using AG News default split from HuggingFace that is equal to 120,000 train and 7,600 test (approximately 93%/7% split).
-utilize the standard AG News partition which consists of 120,000 training and 7,600 test samples. 
+The code utilizes the standard AG News partition from HuggingFace which consists of 120,000 training and 7,600 test samples (approximately 93%/7% split).
 
 However, to simulate a few-shot environment, code takes random sampling from the training partition to create a 'Support Set' of only `N` samples per class. The remaining ~119,900+ samples in the training pool are discarded, and the model is evaluated against the full 7,600-sample test set.
 
