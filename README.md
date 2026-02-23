@@ -13,7 +13,7 @@ Run `pip install -r src/requirements.txt` to install necessary libraries.
 python run_full_dataset_train.py --model <"hf_model_name"> --train_seed <"seed:int"> --epochs <"epochs:int"> --lr <"lr:float"> \
   --batch_size <"batch_size:int"> --max_len <"max_len:int"> --out_dir <"runs_dir">
 
-- `--model <hf_model_name>`: HuggingFace model name (e.g. `distilbert-base-uncased`).
+- `--model <hf_model_name>`: HuggingFace model name (e.g. `bert-base-uncased`, `distilbert-base-uncased`, `t5-small`).
 - `--train_seed <seed:int>`: seed for full supervised training.
 - `--epochs <epochs:int>`: number of epochs over full train split (approx: 1-3).
 - `--lr <lr:float>`: learning rate.

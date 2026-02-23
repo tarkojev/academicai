@@ -46,11 +46,10 @@ class AGNewsDataset(Dataset):
             return_tensors='pt',
         )
         return {
-            'text': text,
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
-            'label': torch.tensor(label, dtype=torch.long)
-        }
+            'text': text
+        }, torch.tensor(label, dtype=torch.long)
 
 # Loading AG News dataset from Hugging Face Datasets library
 def load_ag_news():
@@ -69,18 +68,21 @@ def make_loader(dataset, tokenizer, batch_size: int, max_len: int, shuffle: bool
 
 # Few-Shot Support Set Sampling
 def sample_few_shot_support_set(dataset, n_per_class: int, seed: int):
+    """Samples N examples per class and returns BOTH the dataset and the indices."""
     random.seed(seed)
     np.random.seed(seed)
+    
     all_indices = np.arange(len(dataset))
     labels = np.array(dataset["label"])
+    
     support_indices = []
-    for label in range(4): # Since AG News has 4 labels
-        label_indices = all_indices[labels == label]
+    for label_idx in range(4): # AG News has 4 classes
+        label_indices = all_indices[labels == label_idx]
         selected = np.random.choice(label_indices, n_per_class, replace=False)
-        support_indices.extend(selected)
+        support_indices.extend(selected.tolist()) # Convert to list for JSON compatibility
     
     random.shuffle(support_indices)
-    return dataset.select(support_indices)
+    return dataset.select(support_indices), support_indices
 
 # Hardware handler
 def get_device():

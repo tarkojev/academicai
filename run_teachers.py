@@ -66,14 +66,14 @@ def train_one_classifier(
     set_seed(train_seed)
     model.to(device)
     model.train()
-    loader = make_loader(tokenizer, support_ds, batch_size=batch_size, max_len=max_len, shuffle=True)
+    loader = make_loader(support_ds, tokenizer, batch_size=batch_size, max_len=max_len, shuffle=True)    
     opt = torch.optim.AdamW(model.parameters(), lr=lr)
     loss_fn = nn.CrossEntropyLoss()
 
     # Training loop
     for _ in range(epochs):
         for enc, labels in loader:
-            enc = {k: v.to(device) for k, v in enc.items()}
+            enc = {k: v.to(device) for k, v in enc.items() if isinstance(v, torch.Tensor)}
             labels = labels.to(device)
             opt.zero_grad()
             out = model(**enc)
@@ -99,9 +99,7 @@ def train_one_t5(
     model.to(device)
     model.train()
     opt = torch.optim.AdamW(model.parameters(), lr=lr)
-    loader = make_loader(tokenizer, support_ds, batch_size=batch_size, max_len=max_len, shuffle=True)
-
-    # Training loop
+    loader = make_loader(support_ds, tokenizer, batch_size=batch_size, max_len=max_len, shuffle=True)
     for _ in range(epochs):
         for enc_in, labels in loader:
             input_ids = enc_in["input_ids"].to(device)
@@ -139,11 +137,11 @@ def train_one_t5(
 def predict_logits_classifier(model, tokenizer, hf_ds, device, batch_size: int, max_len: int) -> Tuple[np.ndarray, np.ndarray]:
     model.eval()
     model.to(device)
-    loader = make_loader(tokenizer, hf_ds, batch_size=batch_size, max_len=max_len, shuffle=False)
+    loader = make_loader(hf_ds, tokenizer, batch_size=batch_size, max_len=max_len, shuffle=False)
     all_logits = []
     all_labels = []
     for enc, labels in loader:
-        enc = {k: v.to(device) for k, v in enc.items()}
+        enc = {k: v.to(device) for k, v in enc.items() if isinstance(v, torch.Tensor)}
         out = model(**enc)
         logits = out.logits
         all_logits.append(logits.detach().cpu().numpy())
@@ -164,11 +162,9 @@ def t5_label_probs(
 ) -> Tuple[np.ndarray, np.ndarray]:
     model.eval()
     model.to(device)
-    loader = make_loader(tokenizer, hf_ds, batch_size=batch_size, max_len=max_len, shuffle=False)
+    loader = make_loader(hf_ds, tokenizer, batch_size=batch_size, max_len=max_len, shuffle=False)
     all_probs = []
     all_labels = []
-
-    # Loop through the dataset and compute label likelihoods for each example
     for enc_in, labels in loader:
         input_ids = enc_in["input_ids"].to(device)
         attention_mask = enc_in["attention_mask"].to(device)
@@ -300,6 +296,7 @@ def main():
                 )
                 test_logits = np.log(test_probs + 1e-12)
             else:
+                # Else do standard classifier prediction
                 support_logits, support_labels = predict_logits_classifier(
                     model=model,
                     tokenizer=tok,
@@ -345,7 +342,6 @@ def main():
                     "metrics": m,
                 },
             )
-
             results.append({"run": run_name, "metrics": m})
 
     # All teacher runs
