@@ -161,6 +161,7 @@ def main():
             n_iters=args.bench_iters,
         )
     )
+    # A held-out test set which model haven't seen and measures how long it takes for a single piece of news text to travel through the model to produce a prediction
     total_test_inference_est_sec = float(lat_ms * len(test_ds) / 1000.0)
     run_name = f"full_{args.model}_seed{args.train_seed}_ep{args.epochs}_lr{args.lr}_bs{args.batch_size}_ml{args.max_len}".replace("/", "_")
     run_dir = os.path.join(args.out_dir, run_name)

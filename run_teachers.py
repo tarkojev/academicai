@@ -370,7 +370,7 @@ def main():
                 )
             else:
                 lat_ms = float(
-                    latency_ms(
+                    latency_ms( 
                         model=model,
                         tokenizer=tok,
                         texts=bench_texts,
