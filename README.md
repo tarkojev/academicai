@@ -13,6 +13,7 @@ Run `pip install -r src/requirements.txt` to install necessary libraries.
 The code uses two different types of seeds: 
 -  --support_seed: support seed `sample_few_shot_support_set` in `utils.py` uses `np.random.seed(seed)` and samples `n_per_class` examples per class 
 - --train_seed: training seed `set_seed()` in `utils.py` controls PyTorch randomness, model weight initialization and dataloader shuffling, and is used in `run_teachers.py`, `run_students.py` and `run_full_dataset_train.py`
+- --calib_seed: calibration seed. Used to sample a small labeled calibration set (disjoint from the support set) for temperature scaling of teacher probabilities before ensembling.
 
 
 ### Train/test split

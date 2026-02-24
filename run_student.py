@@ -8,6 +8,7 @@ This file implements the student training script that distills knowledge from te
 # Imported libraries
 import os
 import argparse
+from runpy import run_path
 from typing import List
 import numpy as np
 import torch
@@ -47,10 +48,9 @@ def predict_logits(model, tokenizer, ds, device, batch_size=16, max_len=128):
     loader = make_loader(ds, tokenizer, batch_size, max_len, shuffle=False)
     all_logits = []
     all_labels = []
-    for batch in loader:
-        inputs = {k: v.to(device) for k, v in batch.items() if k not in ["label", "text"]}
-        labels = batch["label"]
-        logits = model(**inputs).logits
+    for enc, labels in loader:
+        enc = {k: v.to(device) for k, v in enc.items() if isinstance(v, torch.Tensor)}
+        logits = model(**enc).logits
         all_logits.append(logits.cpu().numpy())
         all_labels.append(labels.numpy())
     return np.concatenate(all_logits, axis=0), np.concatenate(all_labels, axis=0)
@@ -104,18 +104,19 @@ def main():
     for epoch in range(args.epochs):
         student.train()
         idx0 = 0
-        for batch in loader:
-            bsz = batch["label"].size(0)
-            inputs = {k: v.to(device) for k, v in batch.items() if k not in ["label", "text"]}
-            labels = batch["label"].to(device)
+        for enc, labels in loader:
+            bsz = labels.size(0)
+            enc = {k: v.to(device) for k, v in enc.items() if isinstance(v, torch.Tensor)}
+            labels = labels.to(device)
+
             p_t = torch.from_numpy(ptau_t[idx0:idx0 + bsz]).to(device)
 
-            logits_s = student(**inputs).logits
+            logits_s = student(**enc).logits
             l_ce = ce_loss(logits_s, labels)
-            
+
             logp_s = torch.log_softmax(logits_s / args.tau, dim=1)
             l_kd = kl_loss(logp_s, p_t)
-            
+
             loss = args.alpha * l_ce + (1.0 - args.alpha) * (args.tau ** 2) * l_kd
 
             opt.zero_grad()
