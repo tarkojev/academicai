@@ -271,6 +271,7 @@ def main():
             os.makedirs(run_path, exist_ok=True)
             model, tok = build_teacher(model_name, num_labels=4)
             t0 = time.perf_counter()
+            # Execute training for: generative label-generation (T5)
             if is_t5(model_name):
                 train_one_t5(
                     model=model,
@@ -284,6 +285,7 @@ def main():
                     max_len=args.max_len,
                 )
             else:
+                # Execute training for: classifiers head-based classification fine-tuning
                 train_one_classifier(
                     model=model,
                     tokenizer=tok,
@@ -297,7 +299,7 @@ def main():
                 )
             train_time_sec = float(time.perf_counter() - t0)
             t1 = time.perf_counter()
-            # If T5, get label scoring probs; if classifier, get logits and convert to probs
+            # If T5, get label scoring probabilities
             if is_t5(model_name):
                 support_probs, support_labels = t5_label_probs(
                     model=model,
@@ -319,6 +321,7 @@ def main():
                 )
                 test_logits = np.log(test_probs + 1e-12)
             else:
+                # For classifier, get logits and convert to probabilities
                 support_logits, support_labels = predict_logits_classifier(
                     model=model,
                     tokenizer=tok,
