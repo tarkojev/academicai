@@ -350,6 +350,10 @@ def main():
             "metrics": m,
             "prob_interface": "label_likelihood" if is_t5(args.model) else "classifier_head",
             "t5_label_texts": T5_LABEL_TEXTS if is_t5(args.model) else None,
+            "data": {
+                "train_set_size": len(train_ds),
+                "test_set_size": len(test_ds),
+            },
             "efficiency": {
                 "params": params,
                 "size_mb": size_mb,

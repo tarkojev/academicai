@@ -218,7 +218,7 @@ def benchmark_t5_label_scoring_latency_ms(model, tok, texts, device, max_len=128
     model.to(device)
     def run_one(text: str):
         enc = tok(
-            f"classify: {text}",
+            text,
             return_tensors="pt",
             truncation=True,
             padding="max_length",
@@ -263,6 +263,9 @@ def main():
     device = get_device()
     train_ds, test_ds = load_ag_news()
     support_ds, support_indices = sample_few_shot_support_set(train_ds, args.n_per_class, args.support_seed)
+    train_set_size = len(train_ds)
+    test_set_size = len(test_ds)
+    support_set_size = len(support_ds)
     results = []
     for model_name in args.models:
         for seed in args.train_seeds:
@@ -357,6 +360,8 @@ def main():
             size_mb = float(estimate_model_size_mb(model))
             n_bench = min(args.bench_texts, len(test_ds))
             bench_texts = [test_ds[i]["text"] for i in range(n_bench)]
+            benchwarmup = min(args.bench_warmup, 10) if is_t5(model_name) else args.bench_warmup
+            benchiter = min(args.bench_iters, 20) if is_t5(model_name) else args.bench_iters
 
             # If T5, run the T5 label scoring latency benchmark; otherwise, run the standard classifier forward pass latency benchmark
             if is_t5(model_name):
@@ -367,20 +372,20 @@ def main():
                         texts=bench_texts,
                         device=device,
                         max_len=args.max_len,
-                        n_warmup=min(args.bench_warmup, 10),  # T5 is slower; don't over-warmup
-                        n_iters=min(args.bench_iters, 20),
+                        n_warmup=benchwarmup,
+                        n_iters=benchiter,
                     )
                 )
             else:
                 lat_ms = float(
-                    latency_ms( 
+                    latency_ms(
                         model=model,
                         tokenizer=tok,
                         texts=bench_texts,
                         device=device,
                         max_len=args.max_len,
-                        n_warmup=args.bench_warmup,
-                        n_iters=args.bench_iters,
+                        n_warmup=benchwarmup,
+                        n_iters=benchiter,
                     )
                 )
             # Total inference time where latency is multiplied by the number of samples in the test set and converted from ms to seconds
@@ -390,6 +395,7 @@ def main():
             save_json(
                 os.path.join(run_path, "meta.json"),
                 {
+                    "type": "few_shot_teacher",
                     "model": model_name,
                     "train_seed": seed,
                     "support_seed": args.support_seed,
@@ -402,18 +408,23 @@ def main():
                     "label_space": AG_LABELS,
                     "t5_label_texts": T5_LABEL_TEXTS if is_t5(model_name) else None,
                     "metrics": m,
+                    "data": {
+                        "train_set_size": train_set_size,
+                        "test_set_size": test_set_size,
+                        "support_set_size": support_set_size,
+                    },
                     "efficiency": {
                         "params": params,
                         "size_mb": size_mb,
                         "latency_ms": lat_ms,
                         "latency_bench_n": n_bench,
-                        "bench_warmup": args.bench_warmup,
-                        "bench_iters": args.bench_iters,
+                        "latency_mode": "t5_label_scoring" if is_t5(model_name) else "classifier_forward",
+                        "bench_warmup": benchwarmup,
+                        "bench_iters": benchiter,
                         "train_time_sec": train_time_sec,
                         "test_inference_sec": test_inference_sec,
                         "total_test_inference_est_sec": total_test_inference_est_sec,
                         "device": str(device),
-                        "latency_mode": "t5_label_scoring" if is_t5(model_name) else "classifier_forward",
                     },
                 },
             )
