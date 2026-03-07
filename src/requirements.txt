@@ -14,5 +14,5 @@ accelerate==1.12.0
 scikit-learn>=1.8.0
 tqdm>=4.67.3
 
-# For saving results
+# Graphs
 matplotlib>=3.7.1
