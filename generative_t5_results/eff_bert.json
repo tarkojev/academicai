@@ -1,0 +1,11 @@
+{
+  "model_name": "bert-base-uncased",
+  "device": "cuda",
+  "params": 109485316,
+  "size_mb": 417.66114807128906,
+  "latency_ms": 4.771595433339826,
+  "n_texts": 50,
+  "max_len": 128,
+  "n_warmup": 10,
+  "n_iters": 30
+}

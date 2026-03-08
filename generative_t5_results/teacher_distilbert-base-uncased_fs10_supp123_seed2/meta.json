@@ -1,0 +1,35 @@
+{
+  "model": "distilbert-base-uncased",
+  "train_seed": 2,
+  "support_seed": 123,
+  "n_per_class": 10,
+  "epochs": 5,
+  "lr": 2e-05,
+  "batch_size": 8,
+  "max_len": 128,
+  "prob_interface": "classifier_head",
+  "label_space": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "t5_label_texts": null,
+  "metrics": {
+    "accuracy": 0.8252631578947368,
+    "f1_macro": 0.8227042701019237
+  },
+  "efficiency": {
+    "params": 66956548,
+    "size_mb": 255.42286682128906,
+    "latency_ms": 3.6349184664989784,
+    "latency_bench_n": 50,
+    "bench_warmup": 10,
+    "bench_iters": 30,
+    "train_time_sec": 0.8799391499997,
+    "test_inference_sec": 10.062080917999992,
+    "total_test_inference_est_sec": 27.625380345392237,
+    "device": "cuda",
+    "latency_mode": "classifier_forward"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "accuracy_mean": 0.6501315789473684,
+  "accuracy_std": 0.0,
+  "f1_macro_mean": 0.590266228622471,
+  "f1_macro_std": 0.0,
+  "label_flipping_rate": 0.0,
+  "n_runs": 1,
+  "run_dirs": [
+    "runs/ensemble_fs10_supp123_seed0"
+  ]
+}

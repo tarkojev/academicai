@@ -1,0 +1,11 @@
+{
+  "model_name": "distilbert-base-uncased",
+  "device": "cuda",
+  "params": 66956548,
+  "size_mb": 255.42286682128906,
+  "latency_ms": 2.704911766689596,
+  "n_texts": 50,
+  "max_len": 128,
+  "n_warmup": 10,
+  "n_iters": 30
+}

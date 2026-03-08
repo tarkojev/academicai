@@ -1,0 +1,40 @@
+{
+  "model": "t5-small",
+  "train_seed": 2,
+  "support_seed": 123,
+  "n_per_class": 10,
+  "epochs": 5,
+  "lr": 2e-05,
+  "batch_size": 8,
+  "max_len": 128,
+  "prob_interface": "label_likelihood",
+  "label_space": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "t5_label_texts": [
+    "world",
+    "sports",
+    "business",
+    "sci tech"
+  ],
+  "metrics": {
+    "accuracy": 0.26710526315789473,
+    "f1_macro": 0.13812055548864707
+  },
+  "efficiency": {
+    "params": 60506624,
+    "size_mb": 230.814453125,
+    "latency_ms": 59.67434720023448,
+    "latency_bench_n": 50,
+    "bench_warmup": 10,
+    "bench_iters": 30,
+    "train_time_sec": 1.5462427449983807,
+    "test_inference_sec": 68.60954988699996,
+    "total_test_inference_est_sec": 453.52503872178204,
+    "device": "cuda",
+    "latency_mode": "t5_label_scoring"
+  }
+}

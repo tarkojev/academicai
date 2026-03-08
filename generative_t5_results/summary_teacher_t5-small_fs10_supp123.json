@@ -1,0 +1,13 @@
+{
+  "accuracy_mean": 0.26627192982456144,
+  "accuracy_std": 0.0024130780181541903,
+  "f1_macro_mean": 0.13705101061680322,
+  "f1_macro_std": 0.0061379253582231645,
+  "label_flipping_rate": 0.04092105263157895,
+  "n_runs": 3,
+  "run_dirs": [
+    "runs/teacher_t5-small_fs10_supp123_seed0",
+    "runs/teacher_t5-small_fs10_supp123_seed1",
+    "runs/teacher_t5-small_fs10_supp123_seed2"
+  ]
+}

@@ -14,6 +14,7 @@ import os
 import argparse
 import numpy as np
 from utils import metrics_from_logits, save_json, logits_to_probs
+import json
 
 # Loading logits or probabilities from a run, with support for both formats
 def load_probs(run_dir: str, split: str) -> np.ndarray:
@@ -35,12 +36,25 @@ def load_labels(run_dir: str, split: str) -> np.ndarray:
     return np.load(y_path)
 
 # Confirm labels are the same
-def ensure_same_labels(label_list):
+def label_checker(label_list):
     ref = label_list[0]
     for y in label_list[1:]:
         if not np.array_equal(ref, y):
             raise ValueError("Label mismatch across teacher runs. Check artifacts and ordering.")
     return ref
+
+# Meta checker
+def meta_check(metas, field_name: str):
+    ref = metas[0].get(field_name)
+    for m in metas[1:]:
+        if m.get(field_name) != ref:
+            raise ValueError(f"Mismatch in meta field '{field_name}' across teacher runs.")
+    return ref
+
+# Load meta json
+def load_meta(run_dir: str) -> dict:
+    with open(os.path.join(run_dir, "meta.json"), "r", encoding="utf-8") as f:
+        return json.load(f)
 
 # Main function to run the ensemble and save results
 def main():
@@ -62,7 +76,7 @@ def main():
         test_probs_list.append(load_probs(d, "test"))
         test_labels_list.append(load_labels(d, "test"))
 
-    test_labels = ensure_same_labels(test_labels_list)
+    test_labels = label_checker(test_labels_list)
     test_probs_ens = np.mean(np.stack(test_probs_list, axis=0), axis=0)
 
     test_logits_like = np.log(test_probs_ens + 1e-12)
@@ -72,6 +86,13 @@ def main():
     np.save(os.path.join(run_dir, "test_logits.npy"), test_logits_like)
     np.save(os.path.join(run_dir, "test_labels.npy"), test_labels)
 
+    teacher_metas = [load_meta(d) for d in args.teacher_dirs]
+    ref_meta = teacher_metas[0]
+    support_seed = meta_check(teacher_metas, "support_seed")
+    n_per_class = meta_check(teacher_metas, "n_per_class")
+    label_space = meta_check(teacher_metas, "label_space")
+    teacher_models = [m.get("model") for m in teacher_metas]
+    teacher_train_seeds = [m.get("train_seed") for m in teacher_metas]
     support_metrics = None
     if args.also_support:
         support_probs_list = []
@@ -81,7 +102,7 @@ def main():
             support_probs_list.append(load_probs(d, "support"))
             support_labels_list.append(load_labels(d, "support"))
 
-        support_labels = ensure_same_labels(support_labels_list)
+        support_labels = label_checker(support_labels_list)
         support_probs_ens = np.mean(np.stack(support_probs_list, axis=0), axis=0)
 
         support_logits_like = np.log(support_probs_ens + 1e-12)
@@ -97,11 +118,21 @@ def main():
             "type": "ensemble",
             "teacher_dirs": args.teacher_dirs,
             "also_support": bool(args.also_support),
+            "metrics": test_metrics,
             "metrics_test": test_metrics,
             "metrics_support": support_metrics,
+            "support_seed": support_seed,
+            "n_per_class": n_per_class,
+            "label_space": label_space,
+            "teacher_models": teacher_models,
+            "teacher_train_seeds": teacher_train_seeds,
+            "prob_interface": "ensemble_avg_probs",
+            "data": {
+                "test_set_size": int(len(test_labels)),
+                "support_set_size": int(len(support_labels)) if args.also_support else None,
+            }
         },
     )
-
     print(test_metrics)
 
 

@@ -90,10 +90,12 @@ Output (under `runs/ensemble_fs10_supp123_seed0/`):
 
 ## Make Ensemble based KD'd Student `run_student.py`
 
-python run_student.py --support_seed <"support_seed:int"> --n_per_class <"n_per_class:int"> --train_seed <"train_seed:int"> \
+python run_student.py --student_model <"hf_model_path:str"> \
+  --support_seed <"support_seed:int"> --n_per_class <"n_per_class:int"> --train_seed <"train_seed:int"> \
   --ensemble_dir runs/<"ensemble_run_dir"> \
   --tau <"temperature:float"> --alpha <"alpha:float">
 
+- `--student_model` <hf_model_path:str>: the model architecture to train (e.g., distilbert-base-uncased).
 - `--support_seed <support_seed:int>`: must match the teachers/ensemble.
 - `--n_per_class <n_per_class:int>`: must match the teachers/ensemble.
 - `--train_seed <train_seed:int>`: seed for student training.
@@ -102,7 +104,8 @@ python run_student.py --support_seed <"support_seed:int"> --n_per_class <"n_per_
 - `--alpha <alpha:float>`: CE vs KD weighting. Loss = `alpha*CE + (1-alpha)*tau^2*KD`.
 
 ### Example:
-python run_student.py --support_seed 123 --n_per_class 10 --train_seed 0 \
+python run_student.py --student_model distilbert-base-uncased \
+  --support_seed 123 --n_per_class 10 --train_seed 0 \
   --ensemble_dir runs/ensemble_fs10_supp123_seed0 \
   --tau 2.0 --alpha 0.1
 
@@ -154,6 +157,7 @@ Output:
 
 Once all experiments (Full, Teacher, Ensemble, Student) and efficiency benchmarks are complete, this script generates the final report.
 
+### Example:
 python run_compare.py --runs_root runs --out runs/comparison.csv --out_summary runs/comparison_summary.csv
 
 - This script aggregates mean/std for all matching runs.
@@ -172,6 +176,7 @@ python run_cost_analysis.py --model_name <hf_model_name> --out runs/eff_<model_t
 ### Example:
 python run_cost_analysis.py --model_name bert-base-uncased --out runs/eff_bert.json
 python run_cost_analysis.py --model_name distilbert-base-uncased --out runs/eff_distilbert.json
+python run_cost_analysis.py --model_name t5-small --out runs/eff_t5-small.json
 
 Output:
 - `runs/eff_*.json` containing params, size (MB), and latency (ms).

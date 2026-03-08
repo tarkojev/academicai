@@ -1,0 +1,11 @@
+{
+  "accuracy_mean": 0.7297368421052631,
+  "accuracy_std": 0.0,
+  "f1_macro_mean": 0.701680855428356,
+  "f1_macro_std": 0.0,
+  "label_flipping_rate": 0.0,
+  "n_runs": 1,
+  "run_dirs": [
+    "runs/student_distilbert-base-uncased_fs10_supp123_seed0_tau2.0_a0.1"
+  ]
+}
