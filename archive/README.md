@@ -37,94 +37,52 @@ The code utilizes the standard AG News partition from HuggingFace which consists
 
 However, to simulate a few-shot environment, code takes random sampling from the training partition to create a 'Support Set' of only `N` samples per class. Total support size: `4 × n_per_class`. The remaining ~119,900+ samples in the training pool are discarded, and the model is evaluated against the full 7,600-sample test set. 
 
-## Run model trainings `run_training.py`
 
-python run_training.py
+## Make baseline against full dataset: `run_full_dataset_train.py`
 
-### Modes
-The script supports two modes:
-- baseline - train a single model (full dataset or few-shot subset).
-- teachers - train multiple teacher models and save predictions for ensemble and knowledge distillation.
+python run_full_dataset_train.py --model <"hf_model_name"> --train_seed <"seed:int"> --epochs <"epochs:int"> --lr <"lr:float"> \
+  --batch_size <"batch_size:int"> --max_len <"max_len:int"> --out_dir <"runs_dir">
 
-### Baseline
-You can train a single model either on the full dataset or on a few-shot subset.
-
-#### Single Model Example:
-python run_training.py \
-  --mode baseline \
-  --model <hf_model_name> \
-  --train_seed <seed:int> \
-  --epochs <epochs:int> \
-  --lr <lr:float> \
-  --batch_size <batch_size:int> \
-  --max_len <max_len:int> \
-  --out_dir <runs_dir>
-
-##### Parameters
-- `--mode baseline`: Run single-model training.
+### Parameters
 - `--model <hf_model_name>`: HuggingFace model name (e.g. `bert-base-uncased`, `distilbert-base-uncased`, `t5-small`).
-- `--train_seed <seed:int>`: Random seed for model initialization and training.
-- `--epochs <epochs:int>`: Number of training epochs.
+- `--train_seed <seed:int>`: seed for full supervised training.
+- `--epochs <epochs:int>`: number of epochs over full train split (approx: 1-3).
 - `--lr <lr:float>`: learning rate.
-- `--batch_size <batch_size:int>`: Batch size.
-- `--max_len <max_len:int>`: Max token length.
-- `--out_dir <runs_dir>`: Path to save results.
+- `--batch_size <batch_size:int>`: batch size.
+- `--max_len <max_len:int>`: max token length.
+- `--out_dir <runs_dir>`: output directory (default `runs`).
 
-###### Optional Parameters:
-- `--n_per_class <int>`: Number of samples per class used for training. **Enables few-shot training.**
-- `--support_seed <int>`: Random seed used to sample the few-shot support set.
-- `--max_steps <int>`: Early stopping (debugging; -1 = no limit).
-- `--grad_accum_steps <int>`: Gradient accumulation steps.
-- `--log_every <int>`: Print training loss every N steps (debugging).
+#### Optional
+- `--max_steps <int>`: early stop for debugging (`-1` means no limit).
+- `--grad_accum_steps <int>`: gradient accumulation steps.
+- `--log_every <int>`: print loss every N steps.
 
-#### Full Dataset Example:
-python run_training.py \
-  --mode baseline \
-  --model distilbert-base-uncased \
-  --train_seed 0 \
-  --epochs 2 \
-  --lr 2e-5 \
-  --batch_size 16 \
-  --max_len 128
+### Example:
+python run_full_dataset_train.py --model distilbert-base-uncased --train_seed 0 --epochs 2 --lr 2e-5 \
+  --batch_size 16 --max_len 128 --out_dir runs
 
-#### Few-Shot Baseline Example: 
-Train a single model on 10 samples per class (4 classes, so 10*4 = 40 total samples).
-python run_training.py \
-  --mode baseline \
-  --model distilbert-base-uncased \
-  --train_seed 0 \
-  --n_per_class 10 \
-  --support_seed 123 \
-  --epochs 50 \
-  --lr 2e-5 \
-  --batch_size 8 \
-  --max_len 128
+## Train teachers `run_teachers.py`
 
-### Teachers
-You can train multiple teacher models on a **few-shot support set** and save their predictions for ensemble learning and knowledge distillation.
+python run_teachers.py --support_seed <"support_seed:int"> --n_per_class <"n_per_class:int"> --train_seeds <"seed1:int"> <"seed2:int"> ... \
+  --models <"hf_model_name1"> <"hf_model_name2"> ...
 
-python run_training.py \
-  --mode teachers \
-  --support_seed <support_seed:int> \
-  --n_per_class <n_per_class:int> \
-  --train_seeds <seed1:int> <seed2:int> ... \
-  --models <hf_model_name1> <hf_model_name2> ...
+### Parameters
+- `--support_seed <support_seed:int>`: random seed used to sample the few-shot support set (must match across all runs you want to compare).
+- `--n_per_class <n_per_class:int>`: number of training samples per class in the support set (total support size = `4 * n_per_class`).
+- `--train_seeds <seed...>`: one or more training seeds (creates one run folder per seed).
+- `--models <hf_model_name...>`: HuggingFace model names for teacher architectures (e.g. `bert-base-uncased`, `distilbert-base-uncased`, `t5-small`).
 
-#### Parameters
-- `-mode teachers`: Run teacher training mode.
-- `--support_seed <support_seed:int>`: Random seed used to sample the few-shot support set.
-- `--n_per_class <n_per_class:int>`: Number of samples per class used for training.
-- `--train_seeds <seed>`: Random seed for model initialization and training
-- `--models <hf_model_name>`: HuggingFace model name (e.g. `bert-base-uncased`, `distilbert-base-uncased`, `t5-small`).
-
-#### Example:
-python run_training.py \
-  --mode teachers \
-  --support_seed 123 \
-  --n_per_class 10 \
-  --train_seeds 0 1 2 \
+### Example:
+python run_teachers.py --support_seed 123 --n_per_class 10 --train_seeds 0 1 2 \
   --models bert-base-uncased distilbert-base-uncased t5-small
 
+Output (per run folder under `runs/`):
+- `support_probs.npy`, `support_labels.npy`
+- `test_probs.npy`, `test_labels.npy`
+- `test_logits.npy`
+- `meta.json`
+
+---
 
 ## Run Ensemble baseline `run_ensemble.py`
 
@@ -250,86 +208,5 @@ python run_compare.py --runs_root runs --out runs/comparison.csv --out_summary r
 
 ---
 
-## Quick Start
-Example pipeline using 10 samples per class:
-### Train teachers
-python run_training.py \
-  --mode teachers \
-  --support_seed 123 \
-  --n_per_class 10 \
-  --train_seeds 0 1 2 \
-  --models bert-base-uncased distilbert-base-uncased t5-small
-
-### Build ensemble
-python run_ensemble.py \
-  --teacher_dirs \
-    runs/teacher_bert-base-uncased_fs10_supp123_seed0 \
-    runs/teacher_distilbert-base-uncased_fs10_supp123_seed0 \
-    runs/teacher_t5-small_fs10_supp123_seed0 \
-  --name ensemble_fs10_supp123_seed0 \
-  --also_support
-
-### Train student model
-python run_student.py \
-  --student_model distilbert-base-uncased \
-  --support_seed 123 \
-  --n_per_class 10 \
-  --train_seed 0 \
-  --ensemble_dir runs/ensemble_fs10_supp123_seed0 \
-  --tau 2.0 \
-  --alpha 0.1
-
-### Evaluate results
-python run_evaluation.py
-
----
-
 ## Other:
 > **Note on Reproducibility**: To ensure the Student model correctly learns from the Ensemble, do **not** use the `--shuffle` flag in your loaders or change the `--support_seed` between teacher and student runs. The student script includes a sanity check to verify that the support set ordering matches the ensemble labels.
-
-### How to train ensemble on full dataset
-1. Train full baseline for all models (e.g. `bert-base-uncased`, `distilbert-base-uncased`, `t5-small`).
-
-Example BERT-base:
-python run_training.py \
-  --mode baseline \
-  --model bert-base-uncased \
-  --train_seed 0 \
-  --epochs 2 \
-  --lr 2e-5 \
-  --batch_size 16 \
-  --max_len 128 \
-  --out_dir runs
-
-Example DistilBERT:
-python run_training.py \
-  --mode baseline \
-  --model distilbert-base-uncased \
-  --train_seed 0 \
-  --epochs 2 \
-  --lr 2e-5 \
-  --batch_size 16 \
-  --max_len 128 \
-  --out_dir runs
-
-Example T5-small:
-python run_training.py \
-  --mode baseline \
-  --model t5-small \
-  --train_seed 0 \
-  --epochs 2 \
-  --lr 2e-5 \
-  --batch_size 16 \
-  --max_len 128 \
-  --out_dir runs
-
-2. Train ensemble.
-
-Example of ensemble with models trained on full dataset:
-python run_ensemble.py \
-  --teacher_dirs \
-    runs/full_bert-base-uncased_seed0_ep2_lr2e-05_bs16_ml128 \
-    runs/full_distilbert-base-uncased_seed0_ep2_lr2e-05_bs16_ml128 \
-    runs/full_t5-small_seed0_ep2_lr2e-05_bs16_ml128 \
-  --name ensemble_full_seed0
-

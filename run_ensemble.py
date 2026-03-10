@@ -88,9 +88,9 @@ def main():
 
     teacher_metas = [load_meta(d) for d in args.teacher_dirs]
     ref_meta = teacher_metas[0]
-    support_seed = meta_check(teacher_metas, "support_seed")
-    n_per_class = meta_check(teacher_metas, "n_per_class")
-    label_space = meta_check(teacher_metas, "label_space")
+    support_seed = meta_check(teacher_metas, "support_seed") if "support_seed" in teacher_metas[0] else None
+    n_per_class = meta_check(teacher_metas, "n_per_class") if "n_per_class" in teacher_metas[0] else None
+    label_space = meta_check(teacher_metas, "label_space") if "label_space" in teacher_metas[0] else None
     teacher_models = [m.get("model") for m in teacher_metas]
     teacher_train_seeds = [m.get("train_seed") for m in teacher_metas]
     support_metrics = None
