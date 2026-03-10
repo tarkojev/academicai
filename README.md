@@ -43,8 +43,8 @@ python training.py
 
 ### Modes
 The script supports two modes:
-- baseline - train a single model (full dataset or few-shot subset).
-- teachers - train multiple teacher models and save predictions for ensemble and knowledge distillation.
+- baseline - trains a single model (full dataset or few-shot subset).
+- teachers - trains multiple teacher models and saves predictions for ensemble and knowledge distillation.
 
 ### Baseline
 You can train a single model either on the full dataset or on a few-shot subset.
