@@ -37,9 +37,9 @@ The code utilizes the standard AG News partition from HuggingFace which consists
 
 However, to simulate a few-shot environment, code takes random sampling from the training partition to create a 'Support Set' of only `N` samples per class. Total support size: `4 × n_per_class`. The remaining ~119,900+ samples in the training pool are discarded, and the model is evaluated against the full 7,600-sample test set. 
 
-## Run model trainings `run_training.py`
+## Run model trainings `training.py`
 
-python run_training.py
+python training.py
 
 ### Modes
 The script supports two modes:
@@ -50,7 +50,7 @@ The script supports two modes:
 You can train a single model either on the full dataset or on a few-shot subset.
 
 #### Single Model Example:
-python run_training.py \
+python training.py \
   --mode baseline \
   --model <hf_model_name> \
   --train_seed <seed:int> \
@@ -78,7 +78,7 @@ python run_training.py \
 - `--log_every <int>`: Print training loss every N steps (debugging).
 
 #### Full Dataset Example:
-python run_training.py \
+python training.py \
   --mode baseline \
   --model distilbert-base-uncased \
   --train_seed 0 \
@@ -89,7 +89,7 @@ python run_training.py \
 
 #### Few-Shot Baseline Example: 
 Train a single model on 10 samples per class (4 classes, so 10*4 = 40 total samples).
-python run_training.py \
+python training.py \
   --mode baseline \
   --model distilbert-base-uncased \
   --train_seed 0 \
@@ -103,12 +103,13 @@ python run_training.py \
 ### Teachers
 You can train multiple teacher models on a **few-shot support set** and save their predictions for ensemble learning and knowledge distillation.
 
-python run_training.py \
+python training.py \
   --mode teachers \
   --support_seed <support_seed:int> \
   --n_per_class <n_per_class:int> \
   --train_seeds <seed1:int> <seed2:int> ... \
   --models <hf_model_name1> <hf_model_name2> ...
+
 
 #### Parameters
 - `-mode teachers`: Run teacher training mode.
@@ -118,17 +119,22 @@ python run_training.py \
 - `--models <hf_model_name>`: HuggingFace model name (e.g. `bert-base-uncased`, `distilbert-base-uncased`, `t5-small`).
 
 #### Example:
-python run_training.py \
+python training.py \
   --mode teachers \
   --support_seed 123 \
   --n_per_class 10 \
   --train_seeds 0 1 2 \
   --models bert-base-uncased distilbert-base-uncased t5-small
 
+With the following defaults:
+epochs = 5
+learning_rate = 2e-5
+batch_size = 8
+max_len = 128
 
-## Run Ensemble baseline `run_ensemble.py`
+## Run Ensemble baseline `ensemble.py`
 
-python run_ensemble.py --teacher_dirs runs/<"teacher_run_dir1"> runs/<"teacher_run_dir2"> ... --name <"ensemble_run_name"> --also_support
+python ensemble.py --teacher_dirs runs/<"teacher_run_dir1"> runs/<"teacher_run_dir2"> ... --name <"ensemble_run_name"> --also_support
 
 ### Parameters
 - `--teacher_dirs runs/<teacher_run_dir...>`: list of teacher run folders to ensemble (must all share the same support/test ordering).
@@ -136,7 +142,7 @@ python run_ensemble.py --teacher_dirs runs/<"teacher_run_dir1"> runs/<"teacher_r
 - `--also_support`: also store `support_probs.npy` for KD training
 
 ### Example:
-python run_ensemble.py \
+python ensemble.py \
   --teacher_dirs runs/teacher_bert-base-uncased_fs10_supp123_seed0 \
                runs/teacher_distilbert-base-uncased_fs10_supp123_seed0 \
                runs/teacher_t5-small_fs10_supp123_seed0 \
@@ -151,9 +157,9 @@ Output (under `runs/ensemble_fs10_supp123_seed0/`):
 
 ---
 
-## Train Ensemble-Distilled Student `run_student.py`
+## Train Ensemble-Distilled Student `student.py`
 
-python run_student.py --student_model <"hf_model_path:str"> \
+python student.py --student_model <"hf_model_path:str"> \
   --support_seed <"support_seed:int"> --n_per_class <"n_per_class:int"> --train_seed <"train_seed:int"> \
   --ensemble_dir runs/<"ensemble_run_dir"> \
   --tau <"temperature:float"> --alpha <"alpha:float">
@@ -163,12 +169,12 @@ python run_student.py --student_model <"hf_model_path:str"> \
 - `--support_seed <support_seed:int>`: must match the teachers/ensemble.
 - `--n_per_class <n_per_class:int>`: must match the teachers/ensemble.
 - `--train_seed <train_seed:int>`: seed for student training.
-- `--ensemble_dir runs/<ensemble_run_dir>`: path to stored ensemble folder containing `support_probs.npy` (created by `run_ensemble.py --also_support`).
+- `--ensemble_dir runs/<ensemble_run_dir>`: path to stored ensemble folder containing `support_probs.npy` (created by `ensemble.py --also_support`).
 - `--tau <temperature:float>`: distillation temperature (applied to probability distributions).
 - `--alpha <alpha:float>`: CE vs KD weighting. Loss = `alpha*CE + (1-alpha)*tau^2*KD`.
 
 ### Example:
-python run_student.py --student_model distilbert-base-uncased \
+python student.py --student_model distilbert-base-uncased \
   --support_seed 123 --n_per_class 10 --train_seed 0 \
   --ensemble_dir runs/ensemble_fs10_supp123_seed0 \
   --tau 2.0 --alpha 0.1
@@ -179,24 +185,24 @@ Output (per run folder under `runs/`):
 
 ---
 
-## Ensemble efficiency benchmark `run_ensemble_cost.py`
+## Ensemble efficiency benchmark `ensemble_cost.py`
 
-Unlike `run_cost_analysis.py` which benchmarks a single model, this script measures the combined footprint of the heterogeneous ensemble.
+Unlike `cost_analysis.py` which benchmarks a single model, this script measures the combined footprint of the heterogeneous ensemble.
 
-python run_ensemble_cost.py --models <"model1"> <"model2"> <"model3"> --out runs/eff_ensemble.json
+python ensemble_cost.py --models <"model1"> <"model2"> <"model3"> --out runs/eff_ensemble.json
 
 ### Parameters
 - `--models`: List of HuggingFace model names (e.g., `bert-base-uncased distilbert-base-uncased t5-small`).
 - `--out`: Path to save the combined efficiency metrics.
 
 ### Example:
-python run_ensemble_cost.py --models bert-base-uncased distilbert-base-uncased t5-small --out runs/eff_ensemble.json
+python ensemble_cost.py --models bert-base-uncased distilbert-base-uncased t5-small --out runs/eff_ensemble.json
 
 ---
 
-## Variance across multiple runs evaluation `run_evaluation.py`
+## Variance across multiple runs evaluation `evaluation.py`
 
-python run_evaluation.py --run <"run_prefix">
+python evaluation.py --run <"run_prefix">
 
 ### Parameters
 - `--run <run_prefix>`: prefix used to match multiple run folders under `runs/`.
@@ -208,41 +214,41 @@ python run_evaluation.py --run <"run_prefix">
   - `ensemble_fs10_supp123`
 
 ### Example:
-python run_evaluation.py --run teacher_bert-base-uncased_fs10_supp123
-python run_evaluation.py --run teacher_distilbert-base-uncased_fs10_supp123
-python run_evaluation.py --run teacher_t5-small_fs10_supp123
-python run_evaluation.py --run student_distilbert-base-uncased_fs10_supp123
-python run_evaluation.py --run ensemble_fs10_supp123
+python evaluation.py --run teacher_bert-base-uncased_fs10_supp123
+python evaluation.py --run teacher_distilbert-base-uncased_fs10_supp123
+python evaluation.py --run teacher_t5-small_fs10_supp123
+python evaluation.py --run student_distilbert-base-uncased_fs10_supp123
+python evaluation.py --run ensemble_fs10_supp123
 
 Output:
 - `runs/summary_<run_prefix>.json`
 
 ---
 
-## To run efficiency benchmark `run_cost_analysis.py`
+## To run efficiency benchmark `cost_analysis.py`
 
-python run_cost_analysis.py --model_name <hf_model_name> --out runs/eff_<model_tag>.json
+python cost_analysis.py --model_name <hf_model_name> --out runs/eff_<model_tag>.json
 
 ### Parameters
 - `--model_name <hf_model_name>`: HuggingFace model name to benchmark (e.g. `bert-base-uncased`).
 - `--out runs/eff_<model_tag>.json`: output JSON path (convention: `eff_<something>.json`).
 
 ### Example:
-python run_cost_analysis.py --model_name bert-base-uncased --out runs/eff_bert.json
-python run_cost_analysis.py --model_name distilbert-base-uncased --out runs/eff_distilbert.json
-python run_cost_analysis.py --model_name t5-small --out runs/eff_t5-small.json
+python cost_analysis.py --model_name bert-base-uncased --out runs/eff_bert.json
+python cost_analysis.py --model_name distilbert-base-uncased --out runs/eff_distilbert.json
+python cost_analysis.py --model_name t5-small --out runs/eff_t5-small.json
 
 Output:
 - `runs/eff_*.json` containing params, size (MB), and latency (ms).
 
 ---
 
-## Generate Comparison Tables `run_compare.py`
+## Generate Comparison Tables `compare.py`
 
 Once all experiments (Full, Teacher, Ensemble, Student) and efficiency benchmarks are complete, this script generates the final report.
 
 ### Example:
-python run_compare.py --runs_root runs --out runs/comparison.csv --out_summary runs/comparison_summary.csv
+python compare.py --runs_root runs --out runs/comparison.csv --out_summary runs/comparison_summary.csv
 
 - This script aggregates mean/std for all matching runs.
 - It calculates the "Retained Accuracy" (Student Acc / Ensemble Acc).
@@ -253,7 +259,7 @@ python run_compare.py --runs_root runs --out runs/comparison.csv --out_summary r
 ## Quick Start
 Example pipeline using 10 samples per class:
 ### Train teachers
-python run_training.py \
+python training.py \
   --mode teachers \
   --support_seed 123 \
   --n_per_class 10 \
@@ -261,7 +267,7 @@ python run_training.py \
   --models bert-base-uncased distilbert-base-uncased t5-small
 
 ### Build ensemble
-python run_ensemble.py \
+python ensemble.py \
   --teacher_dirs \
     runs/teacher_bert-base-uncased_fs10_supp123_seed0 \
     runs/teacher_distilbert-base-uncased_fs10_supp123_seed0 \
@@ -270,7 +276,7 @@ python run_ensemble.py \
   --also_support
 
 ### Train student model
-python run_student.py \
+python student.py \
   --student_model distilbert-base-uncased \
   --support_seed 123 \
   --n_per_class 10 \
@@ -280,7 +286,7 @@ python run_student.py \
   --alpha 0.1
 
 ### Evaluate results
-python run_evaluation.py
+python evaluation.py
 
 ---
 
@@ -291,7 +297,7 @@ python run_evaluation.py
 1. Train full baseline for all models (e.g. `bert-base-uncased`, `distilbert-base-uncased`, `t5-small`).
 
 Example BERT-base:
-python run_training.py \
+python training.py \
   --mode baseline \
   --model bert-base-uncased \
   --train_seed 0 \
@@ -302,7 +308,7 @@ python run_training.py \
   --out_dir runs
 
 Example DistilBERT:
-python run_training.py \
+python training.py \
   --mode baseline \
   --model distilbert-base-uncased \
   --train_seed 0 \
@@ -313,7 +319,7 @@ python run_training.py \
   --out_dir runs
 
 Example T5-small:
-python run_training.py \
+python training.py \
   --mode baseline \
   --model t5-small \
   --train_seed 0 \
@@ -326,7 +332,7 @@ python run_training.py \
 2. Train ensemble.
 
 Example of ensemble with models trained on full dataset:
-python run_ensemble.py \
+python ensemble.py \
   --teacher_dirs \
     runs/full_bert-base-uncased_seed0_ep2_lr2e-05_bs16_ml128 \
     runs/full_distilbert-base-uncased_seed0_ep2_lr2e-05_bs16_ml128 \

@@ -431,7 +431,7 @@ def run_teachers(args, device, train_ds, test_ds):
             support_probs = logits_to_probs(support_logits)
             test_probs = logits_to_probs(test_logits)
 
-            # Save arrays needed later by run_ensemble.py / run_student.py
+            # Save arrays needed later by ensemble.py / student.py
             np.save(os.path.join(run_dir, "support_logits.npy"), support_logits)
             np.save(os.path.join(run_dir, "support_probs.npy"), support_probs)
             np.save(os.path.join(run_dir, "support_labels.npy"), support_labels)
