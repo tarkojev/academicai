@@ -503,7 +503,7 @@ def run_teachers(args, device, train_ds, test_ds):
             )
 
     # Save one summary index for all teacher runs
-    index_name = f"teachers_index_fs{args.n_per_class}.json"
+    index_name = f"teachers_results_fs{args.n_per_class}.json"
 
     save_json(
         os.path.join(args.out_dir, index_name),
