@@ -87,6 +87,14 @@ def main():
     np.save(os.path.join(run_dir, "test_labels.npy"), test_labels)
 
     teacher_metas = [load_meta(d) for d in args.teacher_dirs]
+    ensemble_latency = None
+    try:
+        ensemble_latency = sum(
+            m.get("efficiency", {}).get("latency_ms", 0.0)
+            for m in teacher_metas
+        )
+    except Exception:
+        ensemble_latency = None
     ref_meta = teacher_metas[0]
     support_seed = meta_check(teacher_metas, "support_seed") if "support_seed" in teacher_metas[0] else None
     n_per_class = meta_check(teacher_metas, "n_per_class") if "n_per_class" in teacher_metas[0] else None
@@ -130,6 +138,10 @@ def main():
             "data": {
                 "test_set_size": int(len(test_labels)),
                 "support_set_size": int(len(support_labels)) if args.also_support else None,
+            },
+            "efficiency": {
+            "latency_ms": ensemble_latency,
+                "note": "Sequential inference: ensemble latency approximated as sum of teacher forward passes"
             }
         },
     )

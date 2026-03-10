@@ -487,13 +487,26 @@ def run_teachers(args, device, train_ds, test_ds):
             results.append(
                 {
                     "run": run_name,
+                    "model": model_name,
+                    "train_seed": seed,
+                    "support_seed": args.support_seed,
+                    "n_per_class": args.n_per_class,
                     "metrics": m,
+                    "accuracy": m["accuracy"],
+                    "f1_macro": m["f1_macro"],
+                    "latency_ms": efficiency["latency_ms"],
+                    "params": efficiency["params"],
+                    "size_mb": efficiency["size_mb"],
+                    "train_time_sec": efficiency["train_time_sec"],
+                    "test_inference_sec": efficiency["test_inference_sec"],
                 }
             )
 
     # Save one summary index for all teacher runs
+    index_name = f"teachers_index_fs{args.n_per_class}.json"
+
     save_json(
-        os.path.join(args.out_dir, "teachers_index.json"),
+        os.path.join(args.out_dir, index_name),
         {
             "support_seed": args.support_seed,
             "n_per_class": args.n_per_class,
