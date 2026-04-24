@@ -1,0 +1,45 @@
+Run: full_t5-small_seed0_ep0_lr2e-05_bs16_ml128
+Accuracy : 0.244605
+Macro-F1 : 0.105390
+
+True class counts:
+  World: 1900
+  Sports: 1900
+  Business: 1900
+  Sci/Tech: 1900
+
+Predicted class counts:
+  World: 27
+  Sports: 0
+  Business: 7196
+  Sci/Tech: 377
+
+Raw confusion matrix:
+[[   6    0 1650  244]
+ [   3    0 1823   74]
+ [  12    0 1841   47]
+ [   6    0 1882   12]]
+
+Row-normalized confusion matrix (recall view):
+[[0.0032 0.     0.8684 0.1284]
+ [0.0016 0.     0.9595 0.0389]
+ [0.0063 0.     0.9689 0.0247]
+ [0.0032 0.     0.9905 0.0063]]
+
+Column-normalized confusion matrix (precision view):
+[[0.2222 0.     0.2293 0.6472]
+ [0.1111 0.     0.2533 0.1963]
+ [0.4444 0.     0.2558 0.1247]
+ [0.2222 0.     0.2615 0.0318]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+       World     0.2222    0.0032    0.0062      1900
+      Sports     0.0000    0.0000    0.0000      1900
+    Business     0.2558    0.9689    0.4048      1900
+    Sci/Tech     0.0318    0.0063    0.0105      1900
+
+    accuracy                         0.2446      7600
+   macro avg     0.1275    0.2446    0.1054      7600
+weighted avg     0.1275    0.2446    0.1054      7600

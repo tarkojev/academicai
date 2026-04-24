@@ -1,0 +1,36 @@
+ZERO-SHOT COMBINED SUMMARY
+================================================================================
+
+Run: full_bert-base-uncased_seed0_ep0_lr2e-05_bs16_ml128
+  Accuracy : 0.329737
+  Macro-F1 : 0.252736
+  Unique true labels      : [0, 1, 2, 3]
+  Unique predicted labels : [0, 1, 2]
+  Per-class metrics:
+    World      P=0.2772 R=0.7253 F1=0.4010 true=1900 pred=4972
+    Sports     P=0.4383 R=0.0879 F1=0.1464 true=1900 pred=381
+    Business   P=0.4277 R=0.5058 F1=0.4635 true=1900 pred=2247
+    Sci/Tech   P=0.0000 R=0.0000 F1=0.0000 true=1900 pred=0
+
+Run: full_distilbert-base-uncased_seed0_ep0_lr2e-05_bs16_ml128
+  Accuracy : 0.266974
+  Macro-F1 : 0.152099
+  Unique true labels      : [0, 1, 2, 3]
+  Unique predicted labels : [2, 3]
+  Per-class metrics:
+    World      P=0.0000 R=0.0000 F1=0.0000 true=1900 pred=0
+    Sports     P=0.0000 R=0.0000 F1=0.0000 true=1900 pred=0
+    Business   P=0.2576 R=0.9216 F1=0.4026 true=1900 pred=6798
+    Sci/Tech   P=0.3466 R=0.1463 F1=0.2058 true=1900 pred=802
+
+Run: full_t5-small_seed0_ep0_lr2e-05_bs16_ml128
+  Accuracy : 0.244605
+  Macro-F1 : 0.105390
+  Unique true labels      : [0, 1, 2, 3]
+  Unique predicted labels : [0, 2, 3]
+  Per-class metrics:
+    World      P=0.2222 R=0.0032 F1=0.0062 true=1900 pred=27
+    Sports     P=0.0000 R=0.0000 F1=0.0000 true=1900 pred=0
+    Business   P=0.2558 R=0.9689 F1=0.4048 true=1900 pred=7196
+    Sci/Tech   P=0.0318 R=0.0063 F1=0.0105 true=1900 pred=377
+

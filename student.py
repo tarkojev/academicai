@@ -69,7 +69,7 @@ def main():
     ap.add_argument("--n_per_class", type=int, default=10)
     ap.add_argument("--support_seed", type=int, default=123)
     ap.add_argument("--train_seed", type=int, default=42)
-    ap.add_argument("--epochs", type=int, default=50)
+    ap.add_argument("--epochs", type=int, default=5)
     ap.add_argument("--lr", type=float, default=2e-5)
     ap.add_argument("--batch_size", type=int, default=8)
     ap.add_argument("--max_len", type=int, default=128)

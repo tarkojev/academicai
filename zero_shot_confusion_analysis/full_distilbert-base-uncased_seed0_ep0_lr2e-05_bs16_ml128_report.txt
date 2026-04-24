@@ -1,0 +1,45 @@
+Run: full_distilbert-base-uncased_seed0_ep0_lr2e-05_bs16_ml128
+Accuracy : 0.266974
+Macro-F1 : 0.152099
+
+True class counts:
+  World: 1900
+  Sports: 1900
+  Business: 1900
+  Sci/Tech: 1900
+
+Predicted class counts:
+  World: 0
+  Sports: 0
+  Business: 6798
+  Sci/Tech: 802
+
+Raw confusion matrix:
+[[   0    0 1850   50]
+ [   0    0 1575  325]
+ [   0    0 1751  149]
+ [   0    0 1622  278]]
+
+Row-normalized confusion matrix (recall view):
+[[0.     0.     0.9737 0.0263]
+ [0.     0.     0.8289 0.1711]
+ [0.     0.     0.9216 0.0784]
+ [0.     0.     0.8537 0.1463]]
+
+Column-normalized confusion matrix (precision view):
+[[0.     0.     0.2721 0.0623]
+ [0.     0.     0.2317 0.4052]
+ [0.     0.     0.2576 0.1858]
+ [0.     0.     0.2386 0.3466]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+       World     0.0000    0.0000    0.0000      1900
+      Sports     0.0000    0.0000    0.0000      1900
+    Business     0.2576    0.9216    0.4026      1900
+    Sci/Tech     0.3466    0.1463    0.2058      1900
+
+    accuracy                         0.2670      7600
+   macro avg     0.1511    0.2670    0.1521      7600
+weighted avg     0.1511    0.2670    0.1521      7600
