@@ -1,12 +1,12 @@
 """
-This file implements the ensemble script that combines predictions from multiple teacher runs:
-- It loads the test logits/probs and labels from multiple teacher run folders
-- It checks that the labels are the same across runs (sanity check for correct artifacts)
-- It averages the teacher probabilities to get ensemble soft targets
-- It computes ensemble logits (log of averaged probs) and metrics on the test set
-- It optionally does the same for the support set (for later KD training)
-- It saves the ensemble test logits/probs, labels, and metrics into a new run folder
-- It saves a summary JSON with metadata about the teacher runs and ensemble metrics for later analysis.
+This file implements the ensemble script that combines predictions from multiple teacher runs, which:
+- loads the test logits/probs and labels from multiple teacher run folders
+- checks that the labels are the same across runs (sanity check for correct artifacts)
+- averages the teacher probabilities to get ensemble soft targets
+- computes ensemble logits (log of averaged probs) and metrics on the test set
+- optionally does the same for the support set (for later KD training)
+- saves the ensemble test logits/probs, labels, and metrics into a new run folder
+- saves a summary JSON with metadata about the teacher runs and ensemble metrics for later analysis.
 """
 
 # Imported libraries
@@ -25,7 +25,6 @@ def load_probs(run_dir: str, split: str) -> np.ndarray:
     if os.path.exists(l_path):
         logits = np.load(l_path)
         return logits_to_probs(logits)
-
     raise FileNotFoundError(f"Missing both {split}_probs.npy and {split}_logits.npy in {run_dir}")
 
 # Loading labels from a run
@@ -56,7 +55,7 @@ def load_meta(run_dir: str) -> dict:
     with open(os.path.join(run_dir, "meta.json"), "r", encoding="utf-8") as f:
         return json.load(f)
 
-# Main function to run the ensemble and save results
+# Main function
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out_dir", type=str, default="runs")
@@ -64,30 +63,24 @@ def main():
     ap.add_argument("--name", type=str, required=True)
     ap.add_argument("--also_support", action="store_true", help="Also store support_probs for KD")
     args = ap.parse_args()
-
     os.makedirs(args.out_dir, exist_ok=True)
     run_dir = os.path.join(args.out_dir, args.name)
     os.makedirs(run_dir, exist_ok=True)
-
     test_probs_list = []
     test_labels_list = []
-
     for d in args.teacher_dirs:
         test_probs_list.append(load_probs(d, "test"))
         test_labels_list.append(load_labels(d, "test"))
-
     test_labels = label_checker(test_labels_list)
     test_probs_ens = np.mean(np.stack(test_probs_list, axis=0), axis=0)
-
     test_logits_like = np.log(test_probs_ens + 1e-12)
     test_metrics = metrics_from_logits(test_logits_like, test_labels)
-
     np.save(os.path.join(run_dir, "test_probs.npy"), test_probs_ens)
     np.save(os.path.join(run_dir, "test_logits.npy"), test_logits_like)
     np.save(os.path.join(run_dir, "test_labels.npy"), test_labels)
-
     teacher_metas = [load_meta(d) for d in args.teacher_dirs]
     ensemble_latency = None
+
     try:
         ensemble_latency = sum(
             m.get("efficiency", {}).get("latency_ms", 0.0)
@@ -95,6 +88,7 @@ def main():
         )
     except Exception:
         ensemble_latency = None
+
     ref_meta = teacher_metas[0]
     support_seed = meta_check(teacher_metas, "support_seed") if "support_seed" in teacher_metas[0] else None
     n_per_class = meta_check(teacher_metas, "n_per_class") if "n_per_class" in teacher_metas[0] else None
@@ -102,20 +96,17 @@ def main():
     teacher_models = [m.get("model") for m in teacher_metas]
     teacher_train_seeds = [m.get("train_seed") for m in teacher_metas]
     support_metrics = None
+
     if args.also_support:
         support_probs_list = []
         support_labels_list = []
-
         for d in args.teacher_dirs:
             support_probs_list.append(load_probs(d, "support"))
             support_labels_list.append(load_labels(d, "support"))
-
         support_labels = label_checker(support_labels_list)
         support_probs_ens = np.mean(np.stack(support_probs_list, axis=0), axis=0)
-
         support_logits_like = np.log(support_probs_ens + 1e-12)
         support_metrics = metrics_from_logits(support_logits_like, support_labels)
-
         np.save(os.path.join(run_dir, "support_probs.npy"), support_probs_ens)
         np.save(os.path.join(run_dir, "support_logits.npy"), support_logits_like)
         np.save(os.path.join(run_dir, "support_labels.npy"), support_labels)
@@ -146,7 +137,6 @@ def main():
         },
     )
     print(test_metrics)
-
 
 if __name__ == "__main__":
     main()

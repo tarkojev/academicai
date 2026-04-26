@@ -58,7 +58,7 @@ def predict_logits(model, tokenizer, ds, device, batch_size=16, max_len=128):
         all_labels.append(labels.numpy())
     return np.concatenate(all_logits, axis=0), np.concatenate(all_labels, axis=0)
 
-# Main function to run the student training and save results
+# Main function 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--student_model", type=str, required=True)
@@ -100,7 +100,7 @@ def main():
     if not np.array_equal(support_labels_from_ds, ensemble_labels):
         raise ValueError("Error: Support dataset order does not match saved ensemble labels.")
 
-    # Build student
+    # Build student model, optimizer, and losses
     tok = AutoTokenizer.from_pretrained(args.student_model)
     student = AutoModelForSequenceClassification.from_pretrained(
         args.student_model,

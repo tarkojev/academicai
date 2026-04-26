@@ -8,19 +8,18 @@ This file compares all runs by collecting their test metrics from saved artifact
 - An accuracy ranking graph.
 - A latency ranking graph.
 """
-
+# Imported libraries
 import os
 import json
 import argparse
 import csv
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
-
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import pandas as pd
 
-
+# Constants for run type ordering, marker styles, and colours for visualization
 TYPE_ORDER = {
     "zero-shot": 0,
     "full": 1,
@@ -30,32 +29,32 @@ TYPE_ORDER = {
     "unknown": 9,
 }
 
-# Base marker shape = run type
+# Marker styles
 TYPE_MARKERS = {
     "zero-shot": "D",
     "full": "s",
     "teacher": "X",
-    "student": "^",   # student uses special FS-dependent orientation later
+    "student": "^",
     "ensemble": "o",
     "unknown": "P",
 }
 
-# Student FS orientation mapping
+# Student FS specific orientation mapping to differentiate between different parameters
 STUDENT_FS_MARKERS = {
     10: "v",      # down triangle
     100: ">",     # right triangle
     1000: "^",    # up triangle
 }
 
-# Ensemble FS shown via circle size
+# Ensemble FS specific circle sizing to differentiate between different parameters
 ENSEMBLE_FS_SIZES = {
     10: 110,
     100: 150,
     1000: 190,
 }
 
-# Color = model family
-MODEL_COLORS = {
+# Colours
+MODEL_COLOURS = {
     "BERT": "#4C78A8",
     "DistilBERT": "#F58518",
     "T5-small": "#54A24B",
@@ -70,6 +69,7 @@ TEACHER_FS_MARKERS = {
     1000: "^",    # up triangle
 }
 
+# Read outputs
 def safe_read_json(path: str) -> Optional[dict]:
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -77,14 +77,14 @@ def safe_read_json(path: str) -> Optional[dict]:
     except Exception:
         return None
 
-
+# Load metrics from logits and labels
 def extract_metrics(meta: dict) -> Tuple[Optional[float], Optional[float]]:
     metrics = meta.get("metrics", {}) if isinstance(meta, dict) else {}
     acc = metrics.get("accuracy", None)
     f1 = metrics.get("f1_macro", None)
     return acc, f1
 
-
+# Check that all label arrays are the same across runs
 def detect_run_type(run_name: str, meta: Optional[dict] = None) -> str:
     if run_name.startswith("full_"):
         if meta is not None and meta.get("epochs") == 0:
@@ -98,7 +98,7 @@ def detect_run_type(run_name: str, meta: Optional[dict] = None) -> str:
         return "ensemble"
     return "unknown"
 
-
+# Load inference probabilities and labels from a run directory
 def infer_ensemble_models(runs_root: str, teacher_dirs: List[str]) -> List[str]:
     models = []
     for d in teacher_dirs:
@@ -113,7 +113,6 @@ def infer_ensemble_models(runs_root: str, teacher_dirs: List[str]) -> List[str]:
             m = meta.get("model", None)
             if m:
                 models.append(str(m))
-
     seen = set()
     uniq = []
     for m in models:
@@ -122,34 +121,27 @@ def infer_ensemble_models(runs_root: str, teacher_dirs: List[str]) -> List[str]:
             uniq.append(m)
     return uniq
 
-
+# Load all runs data
 def load_all_runs(runs_root: str) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
-
     if not os.path.exists(runs_root):
         return rows
-
     for name in os.listdir(runs_root):
         run_dir = os.path.join(runs_root, name)
         if not os.path.isdir(run_dir):
             continue
-
         meta_path = os.path.join(run_dir, "meta.json")
         if not os.path.exists(meta_path):
             continue
-
         meta = safe_read_json(meta_path)
         if not meta:
             continue
-
         rtype = detect_run_type(name, meta)
         acc, f1 = extract_metrics(meta)
-
         eff = meta.get("efficiency", {})
         params = eff.get("params")
         latency = eff.get("latency_ms")
         size_mb = eff.get("size_mb")
-
         model = meta.get("model", None)
         if model is None:
             model = meta.get("student_model", None)
@@ -157,14 +149,12 @@ def load_all_runs(runs_root: str) -> List[Dict[str, Any]]:
             model = "ensemble"
         if model is None:
             model = "n/a"
-
         teacher_dirs = meta.get("teacher_dirs", None)
         ensemble_models = None
         if rtype == "ensemble" and isinstance(teacher_dirs, list):
             ensemble_models_list = infer_ensemble_models(runs_root, teacher_dirs)
             if ensemble_models_list:
                 ensemble_models = ",".join(ensemble_models_list)
-
         row = {
             "run_name": name,
             "type": rtype,
@@ -187,10 +177,9 @@ def load_all_runs(runs_root: str) -> List[Dict[str, Any]]:
             "max_len": meta.get("max_len"),
         }
         rows.append(row)
-
     return rows
 
-
+# Format mean +/- std for display
 def fmt_pm(mean_val: Optional[float], std_val: Optional[float], digits: int = 4, pm: str = "±") -> str:
     if mean_val is None:
         return ""
@@ -198,10 +187,9 @@ def fmt_pm(mean_val: Optional[float], std_val: Optional[float], digits: int = 4,
         return f"{mean_val:.{digits}f}"
     return f"{mean_val:.{digits}f} {pm} {std_val:.{digits}f}"
 
-
+# Compute retain ratio vs full for teacher and student runs
 def compute_retain_ratio(rows: List[Dict[str, Any]]) -> None:
     full_acc_by_model: Dict[str, float] = {}
-
     for r in rows:
         if (
             r["type"] == "full"
@@ -213,14 +201,13 @@ def compute_retain_ratio(rows: List[Dict[str, Any]]) -> None:
             acc = float(r["accuracy"])
             if model_name not in full_acc_by_model or acc > full_acc_by_model[model_name]:
                 full_acc_by_model[model_name] = acc
-
     for r in rows:
         if r["type"] in {"teacher", "student"}:
             model_name = str(r["model"])
             if model_name in full_acc_by_model and r.get("accuracy") is not None:
                 r["retain_ratio_vs_full"] = float(r["accuracy"]) / full_acc_by_model[model_name]
 
-
+# Sort rows by type, model, and accuracy for display
 def sort_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     def key(r: Dict[str, Any]):
         t = TYPE_ORDER.get(r.get("type", "unknown"), 9)
@@ -228,13 +215,11 @@ def sort_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         acc = r.get("accuracy", None)
         acc_key = -float(acc) if acc is not None else 1e9
         return (t, model, acc_key, str(r.get("run_name", "")))
-
     return sorted(rows, key=key)
 
-
+# Group key function for aggregation
 def group_key(run: Dict[str, Any]) -> Tuple:
     rtype = run.get("type")
-
     if rtype == "teacher":
         return (
             rtype,
@@ -242,7 +227,6 @@ def group_key(run: Dict[str, Any]) -> Tuple:
             run.get("support_seed"),
             run.get("n_per_class"),
         )
-
     if rtype == "student":
         return (
             rtype,
@@ -252,7 +236,6 @@ def group_key(run: Dict[str, Any]) -> Tuple:
             run.get("tau"),
             run.get("alpha"),
         )
-
     if rtype in {"full", "zero-shot"}:
         return (
             rtype,
@@ -261,7 +244,6 @@ def group_key(run: Dict[str, Any]) -> Tuple:
             run.get("lr"),
             run.get("batch_size"),
         )
-
     if rtype == "ensemble":
         return (
             rtype,
@@ -269,28 +251,24 @@ def group_key(run: Dict[str, Any]) -> Tuple:
             run.get("support_seed"),
             run.get("n_per_class"),
         )
-
     return (rtype, run.get("model"))
 
-
+# Mean and standard deviation calculation for a list of results
 def mean_std(values: List[float]) -> Tuple[Optional[float], Optional[float]]:
     if not values:
         return None, None
     if len(values) == 1:
         return values[0], 0.0
-
     m = sum(values) / len(values)
     var = sum((x - m) ** 2 for x in values) / (len(values) - 1)
     return m, var ** 0.5
 
-
+# Build summary rows by grouping runs and calculating mean/std metrics for each group
 def build_summary(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     groups: Dict[Tuple, List[Dict[str, Any]]] = defaultdict(list)
     for r in rows:
         groups[group_key(r)].append(r)
-
     summary_rows: List[Dict[str, Any]] = []
-
     for _, items in groups.items():
         accs = [float(x["accuracy"]) for x in items if x.get("accuracy") is not None]
         f1s = [float(x["f1_macro"]) for x in items if x.get("f1_macro") is not None]
@@ -304,18 +282,15 @@ def build_summary(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             for x in items
             if x.get("latency_ms") is not None
         ]
-
         acc_m, acc_s = mean_std(accs)
         f1_m, f1_s = mean_std(f1s)
         ret_m, ret_s = mean_std(retains)
         lat_m, lat_s = mean_std(latencies)
-
         t = items[0].get("type")
         if t == "ensemble":
             group_model = items[0].get("ensemble_models")
         else:
             group_model = items[0].get("model")
-
         row = {
             "group_type": t,
             "group_model": group_model,
@@ -334,25 +309,19 @@ def build_summary(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             "latency_fmt": fmt_pm(lat_m, lat_s, 2),
             "retain_fmt": fmt_pm(ret_m, ret_s, 4),
         }
-
         if t == "student":
             row["tau"] = items[0].get("tau")
             row["alpha"] = items[0].get("alpha")
             row["support_seed"] = items[0].get("support_seed")
-
         if t == "teacher":
             row["support_seed"] = items[0].get("support_seed")
-
         if t == "ensemble":
             row["support_seed"] = items[0].get("support_seed")
-
         if t in {"full", "zero-shot"}:
             row["epochs"] = items[0].get("epochs")
             row["lr"] = items[0].get("lr")
             row["batch_size"] = items[0].get("batch_size")
-
         summary_rows.append(row)
-
     return sorted(
         summary_rows,
         key=lambda x: (
@@ -363,15 +332,13 @@ def build_summary(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         ),
     )
 
-
+# Save a list of dictionaries to a CSV file, ensuring all keys are included as columns
 def save_csv(rows: List[Dict[str, Any]], path: str) -> None:
     if not rows:
         return
-
     dirpath = os.path.dirname(path)
     if dirpath:
         os.makedirs(dirpath, exist_ok=True)
-
     fieldnames = []
     seen = set()
     for row in rows:
@@ -379,13 +346,12 @@ def save_csv(rows: List[Dict[str, Any]], path: str) -> None:
             if key not in seen:
                 seen.add(key)
                 fieldnames.append(key)
-
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 
-
+# Calculate model size in MB based on number of parameters and buffers
 def make_short_model_name(model: str) -> str:
     return (
         str(model)
@@ -394,7 +360,7 @@ def make_short_model_name(model: str) -> str:
         .replace("t5-small", "T5-small")
     )
 
-
+# Calculate model size in MB based on number of parameters and buffers
 def slugify_model_name(model: str) -> str:
     return (
         make_short_model_name(model)
@@ -404,14 +370,13 @@ def slugify_model_name(model: str) -> str:
         .replace("-", "")
     )
 
-
+# Calculate model size in MB based on number of parameters and buffers
 def make_short_label(row: pd.Series) -> str:
     run_type = str(row.get("group_type", "n/a"))
     model = make_short_model_name(str(row.get("group_model", "n/a")))
     fs = row.get("fs", None)
     tau = row.get("tau", None)
     alpha = row.get("alpha", None)
-
     if run_type == "student":
         parts = [model]
         if pd.notna(fs):
@@ -421,28 +386,21 @@ def make_short_label(row: pd.Series) -> str:
         if pd.notna(alpha):
             parts.append(f"α={alpha}")
         return ", ".join(parts)
-
     if run_type == "ensemble":
         return f"Ensemble, FS={int(fs)}" if pd.notna(fs) else "Ensemble"
-
     if run_type == "full":
         return f"Full {model}"
-
     if run_type == "zero-shot":
         return f"Zero-shot {model}"
-
     if run_type == "teacher":
         return f"Teacher {model}, FS={int(fs)}" if pd.notna(fs) else f"Teacher {model}"
-
     return f"{run_type} {model}"
 
-
+# Calculate model size in MB based on number of parameters and buffers
 def get_model_family(group_type: str, group_model: str) -> str:
     if str(group_type) == "ensemble":
         return "Ensemble"
-
     model = str(group_model).lower()
-
     if "distilbert" in model:
         return "DistilBERT"
     if "bert" in model:
@@ -451,10 +409,9 @@ def get_model_family(group_type: str, group_model: str) -> str:
         return "T5-small"
     return "Other"
 
-
+# Select support set examples based on support_seed and n_per_class, ensuring the order matches the saved ensemble labels
 def marker_for_row(row: pd.Series) -> str:
     run_type = str(row.get("group_type", "unknown"))
-
     if run_type == "student":
         fs = row.get("fs")
         if pd.notna(fs):
@@ -464,13 +421,11 @@ def marker_for_row(row: pd.Series) -> str:
             except Exception:
                 return "^"
         return "^"
-
     return TYPE_MARKERS.get(run_type, "o")
 
-
+# Calculate model size in MB based on number of parameters and buffers
 def marker_size_for_row(row: pd.Series) -> int:
     run_type = str(row.get("group_type", "unknown"))
-
     if run_type == "ensemble":
         fs = row.get("fs")
         if pd.notna(fs):
@@ -480,7 +435,6 @@ def marker_size_for_row(row: pd.Series) -> int:
             except Exception:
                 return 150
         return 150
-
     if run_type in {"full", "zero-shot"}:
         return 140
     if run_type == "student":
@@ -489,18 +443,12 @@ def marker_size_for_row(row: pd.Series) -> int:
         return 130
     return 130
 
-
+# Build student table rows
 def build_student_table_rows(summary_rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Build rows tailored to the KD appendix tables:
-    one row per student (model, fs, tau, alpha) summary entry,
-    sorted within each (model, fs) block by accuracy descending and latency ascending.
-    Also marks the best accuracy and best latency row in each block.
-    """
     student_rows = [dict(r) for r in summary_rows if r.get("group_type") == "student"]
     if not student_rows:
         return []
-
+    # Group by model and few-shot setting, then sort by accuracy and latency within each group to identify best runs
     grouped: Dict[Tuple[str, int], List[Dict[str, Any]]] = defaultdict(list)
     for row in student_rows:
         model = str(row.get("group_model"))
@@ -508,9 +456,7 @@ def build_student_table_rows(summary_rows: List[Dict[str, Any]]) -> List[Dict[st
         if fs is None:
             continue
         grouped[(model, int(fs))].append(row)
-
     output_rows: List[Dict[str, Any]] = []
-
     for (model, fs), items in grouped.items():
         items_sorted = sorted(
             items,
@@ -521,24 +467,20 @@ def build_student_table_rows(summary_rows: List[Dict[str, Any]]) -> List[Dict[st
                 (r.get("alpha") if r.get("alpha") is not None else float("inf")),
             ),
         )
-
         best_acc_idx = None
         best_lat_idx = None
-
         acc_candidates = [
             (idx, r["accuracy_mean"]) for idx, r in enumerate(items_sorted)
             if r.get("accuracy_mean") is not None
         ]
         if acc_candidates:
             best_acc_idx = max(acc_candidates, key=lambda x: x[1])[0]
-
         lat_candidates = [
             (idx, r["latency_mean"]) for idx, r in enumerate(items_sorted)
             if r.get("latency_mean") is not None
         ]
         if lat_candidates:
             best_lat_idx = min(lat_candidates, key=lambda x: x[1])[0]
-
         for idx, r in enumerate(items_sorted):
             row = {
                 "section_model": make_short_model_name(model),
@@ -560,7 +502,7 @@ def build_student_table_rows(summary_rows: List[Dict[str, Any]]) -> List[Dict[st
                 "rank_in_section": idx + 1,
                 "is_best_accuracy": idx == best_acc_idx,
                 "is_best_latency": idx == best_lat_idx,
-                "row_color": (
+                "row_colour": (
                     "green!15" if idx == best_acc_idx
                     else "blue!12" if idx == best_lat_idx
                     else ""
@@ -575,7 +517,6 @@ def build_student_table_rows(summary_rows: List[Dict[str, Any]]) -> List[Dict[st
                 "Retain (LaTeX)": fmt_pm(r.get("retain_mean"), r.get("retain_std"), 4, pm=r"$\pm$"),
             }
             output_rows.append(row)
-
     output_rows = sorted(
         output_rows,
         key=lambda r: (
@@ -586,53 +527,43 @@ def build_student_table_rows(summary_rows: List[Dict[str, Any]]) -> List[Dict[st
     )
     return output_rows
 
-
-def save_student_table_csvs(summary_rows: List[Dict[str, Any]], combined_path: str, tables_dir: str) -> None:
+# Save student table CSVs
+def save_student_table_csv(summary_rows: List[Dict[str, Any]], combined_path: str, tables_dir: str) -> None:
     rows = build_student_table_rows(summary_rows)
     if not rows:
         print("No student summary rows found for appendix table CSV export.")
         return
-
     save_csv(rows, combined_path)
     print(f"Student table CSV: {combined_path}")
-
     os.makedirs(tables_dir, exist_ok=True)
     grouped: Dict[Tuple[str, int], List[Dict[str, Any]]] = defaultdict(list)
     for row in rows:
         grouped[(row["section_model"], int(row["section_fs"]))].append(row)
-
     for (model, fs), items in grouped.items():
         fname = f"{model.lower().replace('/', '_').replace(' ', '_')}_fs{fs}.csv"
         out_path = os.path.join(tables_dir, fname)
         save_csv(items, out_path)
-
     print(f"Student table section CSVs saved in: {tables_dir}")
 
-
+# Save accuracy vs latency plot
 def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: str) -> None:
     if not summary_rows:
         return
-
     df = pd.DataFrame(summary_rows)
     x_col = "latency_mean"
     y_col = "accuracy_mean"
     type_col = "group_type"
-
     plot_df = df.dropna(subset=[x_col, y_col]).copy()
     if plot_df.empty:
         print("No valid data for efficiency trade-off plot.")
         return
-
     plot_df["model_family"] = plot_df.apply(
         lambda r: get_model_family(r["group_type"], r["group_model"]),
         axis=1
     )
     plot_df["plot_marker"] = plot_df.apply(marker_for_row, axis=1)
     plot_df["plot_size"] = plot_df.apply(marker_size_for_row, axis=1)
-
     fig, ax = plt.subplots(figsize=(18, 9))
-
-    # Plot points
     for (run_type, model_family, plot_marker), sub in plot_df.groupby([type_col, "model_family", "plot_marker"]):
         ax.scatter(
             sub[x_col],
@@ -640,26 +571,18 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
             s=sub["plot_size"],
             alpha=0.75,
             marker=plot_marker,
-            c=MODEL_COLORS.get(str(model_family), MODEL_COLORS["Other"]),
-            edgecolors="black",
+            c=MODEL_COLOURS.get(str(model_family), MODEL_COLOURS["Other"]),
+            edgecolours="black",
             linewidths=0.6,
         )
-
     ax.set_title("Efficiency Trade-off: Accuracy vs Latency")
     ax.set_xlabel("Latency (ms)")
     ax.set_ylabel("Accuracy")
     ax.grid(True, linestyle="--", alpha=0.35)
     ax.margins(x=0.05, y=0.06)
-
-    # Leave room on the right for legends
     fig.subplots_adjust(right=0.78)
-
-    # ---------------------------
-    # Legend 1: Type (shape)
-    # ---------------------------
     present_types = plot_df[type_col].dropna().unique()
     ordered_types = [t for t in TYPE_MARKERS.keys() if t in present_types]
-
     type_handles = []
     for t in ordered_types:
         marker = "^" if t == "student" else TYPE_MARKERS[t]
@@ -668,43 +591,33 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
                 [0], [0],
                 marker=marker,
                 linestyle="",
-                color="w",
-                markerfacecolor="white",
-                markeredgecolor="black",
+                colour="w",
+                markerfacecolour="white",
+                markeredgecolour="black",
                 markersize=10,
                 label=t
             )
         )
-
-    # ---------------------------
-    # Legend 2: Model (colour)
-    # ---------------------------
     present_models = plot_df["model_family"].dropna().unique()
-    ordered_models = [m for m in MODEL_COLORS.keys() if m in present_models]
-
+    ordered_models = [m for m in MODEL_COLOURS.keys() if m in present_models]
     model_handles = [
         Line2D(
             [0], [0],
             marker="o",
             linestyle="",
-            color="w",
-            markerfacecolor=MODEL_COLORS[m],
-            markeredgecolor="black",
+            colour="w",
+            markerfacecolour=MODEL_COLOURS[m],
+            markeredgecolour="black",
             markersize=10,
             label=m
         )
         for m in ordered_models
     ]
-
-    # ---------------------------
-    # Legend 3: Ensemble FS (circle size)
-    # ---------------------------
     present_ensemble_fs = []
     if "fs" in plot_df.columns:
         ensemble_df = plot_df[plot_df["group_type"] == "ensemble"].copy()
         if not ensemble_df.empty:
             present_ensemble_fs = sorted(set(int(v) for v in ensemble_df["fs"].dropna().tolist()))
-
     ensemble_fs_handles = []
     for fs in [10, 100, 1000]:
         if fs in present_ensemble_fs:
@@ -713,23 +626,18 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
                     [0], [0],
                     marker="o",
                     linestyle="",
-                    color="w",
-                    markerfacecolor="white",
-                    markeredgecolor="black",
+                    colour="w",
+                    markerfacecolour="white",
+                    markeredgecolour="black",
                     markersize=(ENSEMBLE_FS_SIZES[fs] ** 0.5) / 1.6,
                     label=f"FS={fs}"
                 )
             )
-
-    # ---------------------------
-    # Legend 4: Student FS (triangle orientation)
-    # ---------------------------
     present_student_fs = []
     if "fs" in plot_df.columns:
         student_df = plot_df[plot_df["group_type"] == "student"].copy()
         if not student_df.empty:
             present_student_fs = sorted(set(int(v) for v in student_df["fs"].dropna().tolist()))
-
     student_fs_handles = []
     for fs in [10, 100, 1000]:
         if fs in present_student_fs:
@@ -738,23 +646,21 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
                     [0], [0],
                     marker=STUDENT_FS_MARKERS[fs],
                     linestyle="",
-                    color="w",
-                    markerfacecolor="white",
-                    markeredgecolor="black",
+                    colour="w",
+                    markerfacecolour="white",
+                    markeredgecolour="black",
                     markersize=10,
                     label=f"FS={fs}"
                 )
             )
-
     legend_style = {
         "frameon": True,
-        "facecolor": "white",
+        "facecolour": "white",
         "framealpha": 0.95,
-        "edgecolor": "black",
+        "edgecolour": "black",
         "borderpad": 0.6,
         "labelspacing": 0.4,
     }
-
     if type_handles:
         fig.legend(
             handles=type_handles,
@@ -763,7 +669,6 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
             bbox_to_anchor=(0.80, 0.88),
             **legend_style
         )
-
     if model_handles:
         fig.legend(
             handles=model_handles,
@@ -772,7 +677,6 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
             bbox_to_anchor=(0.80, 0.60),
             **legend_style
         )
-
     if ensemble_fs_handles:
         fig.legend(
             handles=ensemble_fs_handles,
@@ -781,7 +685,6 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
             bbox_to_anchor=(0.80, 0.40),
             **legend_style
         )
-
     if student_fs_handles:
         fig.legend(
             handles=student_fs_handles,
@@ -790,46 +693,30 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
             bbox_to_anchor=(0.80, 0.18),
             **legend_style
         )
-
     plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"[Visual] Saved: {out_path}")
 
+# Save teacher scarcity trade-off plot
 def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: str) -> None:
-    """
-    Plot only zero-shot baselines, full-data baselines, and few-shot teacher runs.
-
-    Visual encoding:
-    - zero-shot = diamond
-    - full = square
-    - teacher FS=10 = down triangle
-    - teacher FS=100 = right triangle
-    - teacher FS=1000 = up triangle
-    - colour = model family
-    """
     if not summary_rows:
         return
-
     df = pd.DataFrame(summary_rows)
     x_col = "latency_mean"
     y_col = "accuracy_mean"
-
     plot_df = df[
         df["group_type"].isin(["zero-shot", "full", "teacher"])
     ].dropna(subset=[x_col, y_col]).copy()
-
     if plot_df.empty:
         print("No valid data for teacher/baseline trade-off plot.")
         return
-
     plot_df["model_family"] = plot_df.apply(
         lambda r: get_model_family(r["group_type"], r["group_model"]),
         axis=1
     )
-
+    # Add baseline marker
     def teacher_baseline_marker_for_row(row: pd.Series) -> str:
         run_type = str(row.get("group_type", "unknown"))
-
         if run_type == "teacher":
             fs = row.get("fs")
             if pd.notna(fs):
@@ -838,9 +725,9 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
                 except Exception:
                     return "X"
             return "X"
-
         return TYPE_MARKERS.get(run_type, "o")
 
+    # Add baseline marker size
     def teacher_baseline_size_for_row(row: pd.Series) -> int:
         run_type = str(row.get("group_type", "unknown"))
         if run_type == "zero-shot":
@@ -850,13 +737,9 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
         if run_type == "teacher":
             return 135
         return 130
-
     plot_df["plot_marker"] = plot_df.apply(teacher_baseline_marker_for_row, axis=1)
     plot_df["plot_size"] = plot_df.apply(teacher_baseline_size_for_row, axis=1)
-
     fig, ax = plt.subplots(figsize=(16, 9))
-
-    # Plot grouped points
     for (run_type, model_family, plot_marker), sub in plot_df.groupby(
         ["group_type", "model_family", "plot_marker"]
     ):
@@ -866,24 +749,18 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
             s=sub["plot_size"],
             alpha=0.8,
             marker=plot_marker,
-            c=MODEL_COLORS.get(str(model_family), MODEL_COLORS["Other"]),
-            edgecolors="black",
+            c=MODEL_COLOURS.get(str(model_family), MODEL_COLOURS["Other"]),
+            edgecolours="black",
             linewidths=0.7,
         )
-
     ax.set_title("Teacher Scarcity Trade-off: Zero-shot, Full, and Few-shot Teachers")
     ax.set_xlabel("Latency (ms)")
     ax.set_ylabel("Accuracy")
     ax.grid(True, linestyle="--", alpha=0.35)
     ax.margins(x=0.06, y=0.06)
-
-    # Leave space on the right for legends
     fig.subplots_adjust(right=0.79)
-
     present_types = set(plot_df["group_type"].dropna().tolist())
     present_models = list(plot_df["model_family"].dropna().unique())
-
-    # Legend 1: baseline type markers
     baseline_handles = []
     if "zero-shot" in present_types:
         baseline_handles.append(
@@ -891,9 +768,9 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
                 [0], [0],
                 marker=TYPE_MARKERS["zero-shot"],
                 linestyle="",
-                color="w",
-                markerfacecolor="white",
-                markeredgecolor="black",
+                colour="w",
+                markerfacecolour="white",
+                markeredgecolour="black",
                 markersize=10,
                 label="zero-shot"
             )
@@ -904,37 +781,32 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
                 [0], [0],
                 marker=TYPE_MARKERS["full"],
                 linestyle="",
-                color="w",
-                markerfacecolor="white",
-                markeredgecolor="black",
+                colour="w",
+                markerfacecolour="white",
+                markeredgecolour="black",
                 markersize=10,
                 label="full"
             )
         )
-
-    # Legend 2: model family colours
-    ordered_models = [m for m in MODEL_COLORS.keys() if m in present_models]
+    ordered_models = [m for m in MODEL_COLOURS.keys() if m in present_models]
     model_handles = [
         Line2D(
             [0], [0],
             marker="o",
             linestyle="",
-            color="w",
-            markerfacecolor=MODEL_COLORS[m],
-            markeredgecolor="black",
+            colour="w",
+            markerfacecolour=MODEL_COLOURS[m],
+            markeredgecolour="black",
             markersize=10,
             label=m
         )
         for m in ordered_models
     ]
-
-    # Legend 3: teacher FS marker orientation
     teacher_fs_handles = []
     present_teacher_fs = []
     teacher_df = plot_df[plot_df["group_type"] == "teacher"].copy()
     if not teacher_df.empty and "fs" in teacher_df.columns:
         present_teacher_fs = sorted(set(int(v) for v in teacher_df["fs"].dropna().tolist()))
-
     for fs in [10, 100, 1000]:
         if fs in present_teacher_fs:
             teacher_fs_handles.append(
@@ -942,23 +814,21 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
                     [0], [0],
                     marker=TEACHER_FS_MARKERS[fs],
                     linestyle="",
-                    color="w",
-                    markerfacecolor="white",
-                    markeredgecolor="black",
+                    colour="w",
+                    markerfacecolour="white",
+                    markeredgecolour="black",
                     markersize=10,
                     label=f"FS={fs}"
                 )
             )
-
     legend_style = {
         "frameon": True,
-        "facecolor": "white",
+        "facecolour": "white",
         "framealpha": 0.95,
-        "edgecolor": "black",
+        "edgecolour": "black",
         "borderpad": 0.6,
         "labelspacing": 0.4,
     }
-
     if baseline_handles:
         fig.legend(
             handles=baseline_handles,
@@ -967,7 +837,6 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
             bbox_to_anchor=(0.80, 0.86),
             **legend_style
         )
-
     if model_handles:
         fig.legend(
             handles=model_handles,
@@ -976,7 +845,6 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
             bbox_to_anchor=(0.80, 0.58),
             **legend_style
         )
-
     if teacher_fs_handles:
         fig.legend(
             handles=teacher_fs_handles,
@@ -985,23 +853,20 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
             bbox_to_anchor=(0.80, 0.30),
             **legend_style
         )
-
     plt.savefig(out_path, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"[Visual] Saved: {out_path}")
 
+# Save accuracy ranking plot
 def save_accuracy_ranking_plot(summary_rows: List[Dict[str, Any]], out_path: str, top_n: int = 25) -> None:
     if not summary_rows:
         return
-
     df = pd.DataFrame(summary_rows)
     df = df.dropna(subset=["accuracy_mean"]).copy()
     if df.empty:
         return
-
     df = df.sort_values("accuracy_mean", ascending=False).head(top_n).copy()
     df["label"] = df.apply(make_short_label, axis=1)
-
     plt.figure(figsize=(12, 8))
     plt.barh(df["label"], df["accuracy_mean"], xerr=df["accuracy_std"], alpha=0.8)
     plt.gca().invert_yaxis()
@@ -1014,19 +879,16 @@ def save_accuracy_ranking_plot(summary_rows: List[Dict[str, Any]], out_path: str
     plt.close()
     print(f"[Visual] Saved: {out_path}")
 
-
+# Save latency ranking plot
 def save_latency_ranking_plot(summary_rows: List[Dict[str, Any]], out_path: str, top_n: int = 25) -> None:
     if not summary_rows:
         return
-
     df = pd.DataFrame(summary_rows)
     df = df.dropna(subset=["latency_mean"]).copy()
     if df.empty:
         return
-
     df = df.sort_values("latency_mean", ascending=True).head(top_n).copy()
     df["label"] = df.apply(make_short_label, axis=1)
-
     plt.figure(figsize=(12, 8))
     plt.barh(df["label"], df["latency_mean"], xerr=df["latency_std"], alpha=0.8)
     plt.gca().invert_yaxis()
@@ -1039,7 +901,7 @@ def save_latency_ranking_plot(summary_rows: List[Dict[str, Any]], out_path: str,
     plt.close()
     print(f"[Visual] Saved: {out_path}")
 
-
+# Main function
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs_root", type=str, default="runs")
@@ -1049,48 +911,40 @@ def main():
     ap.add_argument("--student_tables_dir", type=str, default="runs/student_table_sections")
     ap.add_argument("--plots_dir", type=str, default="plots")
     args = ap.parse_args()
-
     rows = load_all_runs(args.runs_root)
+    
     if not rows:
         print(f"No runs found in {args.runs_root}")
         return
-
+    
     compute_retain_ratio(rows)
     rows = sort_rows(rows)
     save_csv(rows, args.out)
-
     summary_rows = build_summary(rows)
     save_csv(summary_rows, args.out_summary)
-    save_student_table_csvs(summary_rows, args.out_student_tables, args.student_tables_dir)
-
+    save_student_table_csv(summary_rows, args.out_student_tables, args.student_tables_dir)
     print(f"Detailed CSV:       {args.out}")
     print(f"Summary CSV:        {args.out_summary}")
     print(f"Student table CSV:  {args.out_student_tables}")
-
     os.makedirs(args.plots_dir, exist_ok=True)
-
     save_efficiency_tradeoff_plot(
         summary_rows,
         os.path.join(args.plots_dir, "efficiency_tradeoff.png"),
     )
-
     save_teacher_baseline_tradeoff_plot(
         summary_rows,
         os.path.join(args.plots_dir, "teacher_baseline_tradeoff.png"),
     )
-
     save_accuracy_ranking_plot(
         summary_rows,
         os.path.join(args.plots_dir, "accuracy_ranking.png"),
         top_n=25,
     )
-
     save_latency_ranking_plot(
         summary_rows,
         os.path.join(args.plots_dir, "latency_ranking.png"),
         top_n=25,
     )
-
 
 if __name__ == "__main__":
     main()
