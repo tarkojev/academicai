@@ -1,0 +1,32 @@
+{
+  "type": "full_supervision_baseline",
+  "model": "bert-base-uncased",
+  "train_seed": 0,
+  "epochs": 2,
+  "lr": 2e-05,
+  "batch_size": 16,
+  "max_len": 128,
+  "metrics": {
+    "accuracy": 0.9464473684210526,
+    "f1_macro": 0.9464722177742799
+  },
+  "prob_interface": "classifier_head",
+  "t5_label_texts": null,
+  "data": {
+    "train_set_size": 120000,
+    "test_set_size": 7600
+  },
+  "efficiency": {
+    "params": 109485316,
+    "size_mb": 417.66114807128906,
+    "latency_ms": 6.241066866580998,
+    "latency_bench_n": 50,
+    "latency_mode": "classifier_forward",
+    "bench_warmup": 10,
+    "bench_iters": 30,
+    "train_time_sec": 1303.098556199,
+    "test_inference_sec": 13.277843678999488,
+    "total_test_inference_est_sec": 47.43210818601558,
+    "device": "cuda"
+  }
+}

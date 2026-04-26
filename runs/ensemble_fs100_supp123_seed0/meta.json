@@ -1,0 +1,48 @@
+{
+  "type": "ensemble",
+  "teacher_dirs": [
+    "runs/teacher_bert-base-uncased_fs100_supp123_seed0",
+    "runs/teacher_distilbert-base-uncased_fs100_supp123_seed0",
+    "runs/teacher_t5-small_fs100_supp123_seed0"
+  ],
+  "also_support": true,
+  "metrics": {
+    "accuracy": 0.8723684210526316,
+    "f1_macro": 0.8717485440060919
+  },
+  "metrics_test": {
+    "accuracy": 0.8723684210526316,
+    "f1_macro": 0.8717485440060919
+  },
+  "metrics_support": {
+    "accuracy": 0.9975,
+    "f1_macro": 0.9974999374984375
+  },
+  "support_seed": 123,
+  "n_per_class": 100,
+  "label_space": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "teacher_models": [
+    "bert-base-uncased",
+    "distilbert-base-uncased",
+    "t5-small"
+  ],
+  "teacher_train_seeds": [
+    0,
+    0,
+    0
+  ],
+  "prob_interface": "ensemble_avg_probs",
+  "data": {
+    "test_set_size": 7600,
+    "support_set_size": 400
+  },
+  "efficiency": {
+    "latency_ms": 14.17449993317253,
+    "note": "Sequential inference: ensemble latency approximated as sum of teacher forward passes"
+  }
+}

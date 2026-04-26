@@ -1,0 +1,41 @@
+{
+  "type": "few_shot_teacher",
+  "model": "t5-small",
+  "train_seed": 9,
+  "support_seed": 123,
+  "n_per_class": 100,
+  "epochs": 5,
+  "lr": 2e-05,
+  "batch_size": 8,
+  "max_len": 128,
+  "prob_interface": "classifier_head",
+  "label_space": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "t5_label_texts": null,
+  "metrics": {
+    "accuracy": 0.5873684210526315,
+    "f1_macro": 0.5352999584728647
+  },
+  "data": {
+    "train_set_size": 120000,
+    "test_set_size": 7600,
+    "support_set_size": 400
+  },
+  "efficiency": {
+    "params": 35332868,
+    "size_mb": 134.78419494628906,
+    "latency_ms": 6.105173533334589,
+    "latency_bench_n": 50,
+    "latency_mode": "classifier_forward",
+    "bench_warmup": 10,
+    "bench_iters": 30,
+    "total_test_inference_est_sec": 46.399318853342876,
+    "device": "cuda",
+    "train_time_sec": 6.172901359999969,
+    "test_inference_sec": 9.27400228800002
+  }
+}

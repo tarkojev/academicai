@@ -1,0 +1,38 @@
+{
+  "type": "full_supervision_baseline",
+  "model": "distilbert-base-uncased",
+  "train_seed": 0,
+  "epochs": 0,
+  "lr": 2e-05,
+  "batch_size": 16,
+  "max_len": 128,
+  "metrics": {
+    "accuracy": 0.2669736842105263,
+    "f1_macro": 0.15209869834034523
+  },
+  "data": {
+    "train_set_size": 120000,
+    "train_subset_size": 120000,
+    "test_set_size": 7600,
+    "support_set_size": null
+  },
+  "few_shot": {
+    "enabled": false,
+    "n_per_class": null,
+    "support_seed": null,
+    "support_indices": null
+  },
+  "efficiency": {
+    "params": 66956548,
+    "size_mb": 255.42286682128906,
+    "latency_ms": 4.622097333337176,
+    "latency_bench_n": 50,
+    "latency_mode": "classifier_forward",
+    "bench_warmup": 10,
+    "bench_iters": 30,
+    "total_test_inference_est_sec": 35.12793973336254,
+    "device": "cuda",
+    "train_time_sec": 0.5481461570002466,
+    "test_inference_sec": 7.6918116709998685
+  }
+}
