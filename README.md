@@ -54,7 +54,6 @@ This requires:
 Additionally, ordering must match exactly, where the n-th sample in the student support set must correspond to the n-th teacher probability vector, otherwise distillation will fail.
 
 ---
----
 
 ## Run Model Training `training.py`
 
@@ -89,10 +88,13 @@ python training.py \
   --grad_accum_steps < grad_accum_steps:int > \
   --log_every < log_every:int >
 
-Use only one of:
---model ...
+Use only one of the following:
+
+`--model ...`
+
 OR
---models ...
+
+`--models ...`
 
 ---
 
@@ -217,6 +219,7 @@ Student supports two modes:
 --teacher_dirs runs/<teacher1> runs/<teacher2> ...
 
 ---
+
 ### Structure
 python student.py \
   --student_model < hf_model_name > \
@@ -233,10 +236,13 @@ python student.py \
   --ensemble_dir runs/< ensemble_run_dir >
   --teacher_dirs runs/< teacher_run_dir1 > runs/< teacher_run_dir2 > ...
 
-Use only one of:
---ensemble_dir ...
+Use only one of the following:
+
+`--ensemble_dir ...`
+
 OR
---teacher_dirs ...
+
+`--teacher_dirs ...`
 
 ---
 
