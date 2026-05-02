@@ -8,6 +8,7 @@ This file compares all runs by collecting their test metrics from saved artifact
 - An accuracy ranking graph.
 - A latency ranking graph.
 """
+
 # Imported libraries
 import os
 import json
