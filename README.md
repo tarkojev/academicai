@@ -16,7 +16,7 @@ The repository implements the following experimental pipeline:
 
 ```mermaid
 graph TD
-    A[Full Dataset Baseline] --> B[Few-Shot Teacher Training]
+    A[Baselines] --> B[Few-Shot Teacher Training]
     B --> C[Teacher Ensemble]
     C --> D[Knowledge Distillation Student]
     D --> E[Analysis]
