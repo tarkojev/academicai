@@ -1,0 +1,41 @@
+{
+  "type": "student",
+  "student_model": "distilbert-base-uncased",
+  "model": "distilbert-base-uncased",
+  "teacher_source_type": "ensemble",
+  "teacher_dirs": null,
+  "ensemble_dir": "runs/ensemble_fs10_supp123_seed4",
+  "train_seed": 4,
+  "support_seed": 123,
+  "n_per_class": 10,
+  "tau": 0.5,
+  "alpha": 0.9,
+  "epochs": 5,
+  "lr": 2e-05,
+  "batch_size": 8,
+  "max_len": 128,
+  "metrics": {
+    "accuracy": 0.7769736842105263,
+    "f1_macro": 0.7646157826156701
+  },
+  "prob_interface": "classifier_head",
+  "t5_label_texts": null,
+  "data": {
+    "train_set_size": 120000,
+    "test_set_size": 7600,
+    "support_set_size": 40
+  },
+  "efficiency": {
+    "params": 66956548,
+    "size_mb": 255.42286682128906,
+    "latency_ms": 4.072893133328155,
+    "latency_bench_n": 50,
+    "latency_mode": "classifier_forward",
+    "bench_warmup": 5,
+    "bench_iters": 15,
+    "train_time_sec": null,
+    "test_inference_sec": null,
+    "total_test_inference_est_sec": 30.95398781329398,
+    "device": "cuda"
+  }
+}

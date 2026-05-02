@@ -1,0 +1,32 @@
+{
+  "type": "full_supervision_baseline",
+  "model": "t5-small",
+  "train_seed": 0,
+  "epochs": 2,
+  "lr": 2e-05,
+  "batch_size": 16,
+  "max_len": 128,
+  "metrics": {
+    "accuracy": 0.9219736842105263,
+    "f1_macro": 0.9219394017486409
+  },
+  "prob_interface": "classifier_head",
+  "t5_label_texts": null,
+  "data": {
+    "train_set_size": 120000,
+    "test_set_size": 7600
+  },
+  "efficiency": {
+    "params": 35332868,
+    "size_mb": 134.78419494628906,
+    "latency_ms": 5.160442266605969,
+    "latency_bench_n": 50,
+    "latency_mode": "classifier_forward",
+    "bench_warmup": 10,
+    "bench_iters": 30,
+    "train_time_sec": 426.19235504599965,
+    "test_inference_sec": 5.992931270999179,
+    "total_test_inference_est_sec": 39.219361226205365,
+    "device": "cuda"
+  }
+}

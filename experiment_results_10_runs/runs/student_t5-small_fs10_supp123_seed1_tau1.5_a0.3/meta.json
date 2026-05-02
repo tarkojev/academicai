@@ -1,0 +1,41 @@
+{
+  "type": "student",
+  "student_model": "t5-small",
+  "model": "t5-small",
+  "teacher_source_type": "ensemble",
+  "teacher_dirs": null,
+  "ensemble_dir": "runs/ensemble_fs10_supp123_seed1",
+  "train_seed": 1,
+  "support_seed": 123,
+  "n_per_class": 10,
+  "tau": 1.5,
+  "alpha": 0.3,
+  "epochs": 5,
+  "lr": 2e-05,
+  "batch_size": 8,
+  "max_len": 128,
+  "metrics": {
+    "accuracy": 0.3767105263157895,
+    "f1_macro": 0.3306896504205249
+  },
+  "prob_interface": "classifier_head",
+  "t5_label_texts": null,
+  "data": {
+    "train_set_size": 120000,
+    "test_set_size": 7600,
+    "support_set_size": 40
+  },
+  "efficiency": {
+    "params": 60771332,
+    "size_mb": 231.82423400878906,
+    "latency_ms": 15.849019400169103,
+    "latency_bench_n": 50,
+    "latency_mode": "classifier_forward",
+    "bench_warmup": 5,
+    "bench_iters": 15,
+    "train_time_sec": null,
+    "test_inference_sec": null,
+    "total_test_inference_est_sec": 120.45254744128519,
+    "device": "cuda"
+  }
+}

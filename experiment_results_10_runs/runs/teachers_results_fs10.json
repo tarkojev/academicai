@@ -1,0 +1,398 @@
+{
+  "support_seed": 123,
+  "n_per_class": 10,
+  "train_seeds": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "models": [
+    "bert-base-uncased",
+    "distilbert-base-uncased",
+    "t5-small"
+  ],
+  "results": [
+    {
+      "run": "teacher_bert-base-uncased_fs10_supp123_seed3",
+      "model": "bert-base-uncased",
+      "train_seed": 3,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.7160526315789474,
+        "f1_macro": 0.7092952447458338
+      },
+      "accuracy": 0.7160526315789474,
+      "f1_macro": 0.7092952447458338,
+      "latency_ms": 6.289478066667205,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 2.6012126319999993,
+      "test_inference_sec": 16.918639682999995
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs10_supp123_seed4",
+      "model": "bert-base-uncased",
+      "train_seed": 4,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.7093421052631579,
+        "f1_macro": 0.6991523668560559
+      },
+      "accuracy": 0.7093421052631579,
+      "f1_macro": 0.6991523668560559,
+      "latency_ms": 7.993621733332172,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 1.582627417999987,
+      "test_inference_sec": 16.783865306999985
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs10_supp123_seed5",
+      "model": "bert-base-uncased",
+      "train_seed": 5,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.7,
+        "f1_macro": 0.6789046331750932
+      },
+      "accuracy": 0.7,
+      "f1_macro": 0.6789046331750932,
+      "latency_ms": 9.309042666664405,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 1.5968859120000047,
+      "test_inference_sec": 16.653614591999997
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs10_supp123_seed6",
+      "model": "bert-base-uncased",
+      "train_seed": 6,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.7453947368421052,
+        "f1_macro": 0.7455212402898717
+      },
+      "accuracy": 0.7453947368421052,
+      "f1_macro": 0.7455212402898717,
+      "latency_ms": 6.902050500004482,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 1.6036619999999857,
+      "test_inference_sec": 16.75837507099999
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs10_supp123_seed7",
+      "model": "bert-base-uncased",
+      "train_seed": 7,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.6778947368421052,
+        "f1_macro": 0.6791888038528708
+      },
+      "accuracy": 0.6778947368421052,
+      "f1_macro": 0.6791888038528708,
+      "latency_ms": 7.81393433333335,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 1.5858704470000191,
+      "test_inference_sec": 16.61427535599998
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs10_supp123_seed8",
+      "model": "bert-base-uncased",
+      "train_seed": 8,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.745,
+        "f1_macro": 0.7439567892441407
+      },
+      "accuracy": 0.745,
+      "f1_macro": 0.7439567892441407,
+      "latency_ms": 6.261128766664115,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 1.5872089009999968,
+      "test_inference_sec": 16.659394322000026
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs10_supp123_seed9",
+      "model": "bert-base-uncased",
+      "train_seed": 9,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.699078947368421,
+        "f1_macro": 0.6713916819170802
+      },
+      "accuracy": 0.699078947368421,
+      "f1_macro": 0.6713916819170802,
+      "latency_ms": 9.215823333333143,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 1.5889645919999964,
+      "test_inference_sec": 16.483148168000014
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs10_supp123_seed3",
+      "model": "distilbert-base-uncased",
+      "train_seed": 3,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.8048684210526316,
+        "f1_macro": 0.7990651028784915
+      },
+      "accuracy": 0.8048684210526316,
+      "f1_macro": 0.7990651028784915,
+      "latency_ms": 4.476019400002921,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 1.015551558000027,
+      "test_inference_sec": 9.56427135499996
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs10_supp123_seed4",
+      "model": "distilbert-base-uncased",
+      "train_seed": 4,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.7890789473684211,
+        "f1_macro": 0.7808505768691133
+      },
+      "accuracy": 0.7890789473684211,
+      "f1_macro": 0.7808505768691133,
+      "latency_ms": 3.996197900005427,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 0.888199592000035,
+      "test_inference_sec": 9.536082325999985
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs10_supp123_seed5",
+      "model": "distilbert-base-uncased",
+      "train_seed": 5,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.8060526315789474,
+        "f1_macro": 0.8027944809585272
+      },
+      "accuracy": 0.8060526315789474,
+      "f1_macro": 0.8027944809585272,
+      "latency_ms": 4.847747133328539,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 0.8573097130000065,
+      "test_inference_sec": 9.588480511
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs10_supp123_seed6",
+      "model": "distilbert-base-uncased",
+      "train_seed": 6,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.8432894736842105,
+        "f1_macro": 0.8427846254814053
+      },
+      "accuracy": 0.8432894736842105,
+      "f1_macro": 0.8427846254814053,
+      "latency_ms": 3.4762789999983092,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 0.8678005740000003,
+      "test_inference_sec": 9.645831054999974
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs10_supp123_seed7",
+      "model": "distilbert-base-uncased",
+      "train_seed": 7,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.8318421052631579,
+        "f1_macro": 0.8315816768127378
+      },
+      "accuracy": 0.8318421052631579,
+      "f1_macro": 0.8315816768127378,
+      "latency_ms": 3.478573166660226,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 0.8769761789999961,
+      "test_inference_sec": 9.560269602000005
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs10_supp123_seed8",
+      "model": "distilbert-base-uncased",
+      "train_seed": 8,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.8234210526315789,
+        "f1_macro": 0.8210517985632643
+      },
+      "accuracy": 0.8234210526315789,
+      "f1_macro": 0.8210517985632643,
+      "latency_ms": 3.352224666669675,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 0.8625316970000085,
+      "test_inference_sec": 9.570219033
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs10_supp123_seed9",
+      "model": "distilbert-base-uncased",
+      "train_seed": 9,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.7852631578947369,
+        "f1_macro": 0.7893352435677373
+      },
+      "accuracy": 0.7852631578947369,
+      "f1_macro": 0.7893352435677373,
+      "latency_ms": 4.103582566663515,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 0.8761434150000014,
+      "test_inference_sec": 9.731594544000018
+    },
+    {
+      "run": "teacher_t5-small_fs10_supp123_seed3",
+      "model": "t5-small",
+      "train_seed": 3,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.36973684210526314,
+        "f1_macro": 0.33533715907315453
+      },
+      "accuracy": 0.36973684210526314,
+      "f1_macro": 0.33533715907315453,
+      "latency_ms": 5.286451766662974,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 0.8798203320000084,
+      "test_inference_sec": 9.263430701999994
+    },
+    {
+      "run": "teacher_t5-small_fs10_supp123_seed4",
+      "model": "t5-small",
+      "train_seed": 4,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.26013157894736844,
+        "f1_macro": 0.139385302079399
+      },
+      "accuracy": 0.26013157894736844,
+      "f1_macro": 0.139385302079399,
+      "latency_ms": 5.004650933329913,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 0.6722259059999942,
+      "test_inference_sec": 9.559036256000013
+    },
+    {
+      "run": "teacher_t5-small_fs10_supp123_seed5",
+      "model": "t5-small",
+      "train_seed": 5,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.2698684210526316,
+        "f1_macro": 0.19974552435123286
+      },
+      "accuracy": 0.2698684210526316,
+      "f1_macro": 0.19974552435123286,
+      "latency_ms": 5.9889405666657085,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 0.6157056629999715,
+      "test_inference_sec": 8.558800969000004
+    },
+    {
+      "run": "teacher_t5-small_fs10_supp123_seed6",
+      "model": "t5-small",
+      "train_seed": 6,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.2731578947368421,
+        "f1_macro": 0.16294576158270463
+      },
+      "accuracy": 0.2731578947368421,
+      "f1_macro": 0.16294576158270463,
+      "latency_ms": 6.192834266664704,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 0.5996594590000086,
+      "test_inference_sec": 8.705615948000002
+    },
+    {
+      "run": "teacher_t5-small_fs10_supp123_seed7",
+      "model": "t5-small",
+      "train_seed": 7,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.3868421052631579,
+        "f1_macro": 0.27759414729391774
+      },
+      "accuracy": 0.3868421052631579,
+      "f1_macro": 0.27759414729391774,
+      "latency_ms": 4.4423516666673395,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 0.8482041910000362,
+      "test_inference_sec": 9.589382638000018
+    },
+    {
+      "run": "teacher_t5-small_fs10_supp123_seed8",
+      "model": "t5-small",
+      "train_seed": 8,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.28618421052631576,
+        "f1_macro": 0.21044842891207938
+      },
+      "accuracy": 0.28618421052631576,
+      "f1_macro": 0.21044842891207938,
+      "latency_ms": 7.207311866670807,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 0.9053149659999917,
+      "test_inference_sec": 9.950534287999972
+    },
+    {
+      "run": "teacher_t5-small_fs10_supp123_seed9",
+      "model": "t5-small",
+      "train_seed": 9,
+      "support_seed": 123,
+      "n_per_class": 10,
+      "metrics": {
+        "accuracy": 0.27,
+        "f1_macro": 0.15452881123502876
+      },
+      "accuracy": 0.27,
+      "f1_macro": 0.15452881123502876,
+      "latency_ms": 4.745340866668357,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 0.8026782089999642,
+      "test_inference_sec": 9.947683170000005
+    }
+  ]
+}

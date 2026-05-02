@@ -1,0 +1,398 @@
+{
+  "support_seed": 123,
+  "n_per_class": 1000,
+  "train_seeds": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "models": [
+    "bert-base-uncased",
+    "distilbert-base-uncased",
+    "t5-small"
+  ],
+  "results": [
+    {
+      "run": "teacher_bert-base-uncased_fs1000_supp123_seed3",
+      "model": "bert-base-uncased",
+      "train_seed": 3,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9072368421052631,
+        "f1_macro": 0.9071609288177854
+      },
+      "accuracy": 0.9072368421052631,
+      "f1_macro": 0.9071609288177854,
+      "latency_ms": 8.077167599988874,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 155.749618263,
+      "test_inference_sec": 26.26963563100003
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs1000_supp123_seed4",
+      "model": "bert-base-uncased",
+      "train_seed": 4,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8921052631578947,
+        "f1_macro": 0.8914045226623778
+      },
+      "accuracy": 0.8921052631578947,
+      "f1_macro": 0.8914045226623778,
+      "latency_ms": 8.01799916668339,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 155.689398772,
+      "test_inference_sec": 25.147180311000056
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs1000_supp123_seed5",
+      "model": "bert-base-uncased",
+      "train_seed": 5,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9067105263157895,
+        "f1_macro": 0.9065518777953285
+      },
+      "accuracy": 0.9067105263157895,
+      "f1_macro": 0.9065518777953285,
+      "latency_ms": 8.01509596667529,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 154.9150458050001,
+      "test_inference_sec": 25.31940448299997
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs1000_supp123_seed6",
+      "model": "bert-base-uncased",
+      "train_seed": 6,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9125,
+        "f1_macro": 0.9123948702815217
+      },
+      "accuracy": 0.9125,
+      "f1_macro": 0.9123948702815217,
+      "latency_ms": 8.556477799993445,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 155.14871183800005,
+      "test_inference_sec": 25.293947661999937
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs1000_supp123_seed7",
+      "model": "bert-base-uncased",
+      "train_seed": 7,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8992105263157895,
+        "f1_macro": 0.8990173596672324
+      },
+      "accuracy": 0.8992105263157895,
+      "f1_macro": 0.8990173596672324,
+      "latency_ms": 8.957282033338743,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 155.64696519699987,
+      "test_inference_sec": 26.11403492599993
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs1000_supp123_seed8",
+      "model": "bert-base-uncased",
+      "train_seed": 8,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9021052631578947,
+        "f1_macro": 0.9018228228108573
+      },
+      "accuracy": 0.9021052631578947,
+      "f1_macro": 0.9018228228108573,
+      "latency_ms": 8.310370666655823,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 155.24086901500004,
+      "test_inference_sec": 25.39349161200016
+    },
+    {
+      "run": "teacher_bert-base-uncased_fs1000_supp123_seed9",
+      "model": "bert-base-uncased",
+      "train_seed": 9,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9051315789473684,
+        "f1_macro": 0.9052269457530027
+      },
+      "accuracy": 0.9051315789473684,
+      "f1_macro": 0.9052269457530027,
+      "latency_ms": 6.675370166582677,
+      "params": 109485316,
+      "size_mb": 417.66114807128906,
+      "train_time_sec": 154.7449415860001,
+      "test_inference_sec": 25.259668654000052
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs1000_supp123_seed3",
+      "model": "distilbert-base-uncased",
+      "train_seed": 3,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8880263157894737,
+        "f1_macro": 0.8885684152015167
+      },
+      "accuracy": 0.8880263157894737,
+      "f1_macro": 0.8885684152015167,
+      "latency_ms": 4.587050433368252,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 84.89314188900016,
+      "test_inference_sec": 15.396542747999774
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs1000_supp123_seed4",
+      "model": "distilbert-base-uncased",
+      "train_seed": 4,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8969736842105264,
+        "f1_macro": 0.8968767043789461
+      },
+      "accuracy": 0.8969736842105264,
+      "f1_macro": 0.8968767043789461,
+      "latency_ms": 4.782969833255872,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 84.7886021029999,
+      "test_inference_sec": 15.481297542999982
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs1000_supp123_seed5",
+      "model": "distilbert-base-uncased",
+      "train_seed": 5,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8980263157894737,
+        "f1_macro": 0.8983986669058859
+      },
+      "accuracy": 0.8980263157894737,
+      "f1_macro": 0.8983986669058859,
+      "latency_ms": 4.555939933319071,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 84.88067889800004,
+      "test_inference_sec": 15.326518461999967
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs1000_supp123_seed6",
+      "model": "distilbert-base-uncased",
+      "train_seed": 6,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9051315789473684,
+        "f1_macro": 0.9050864200899683
+      },
+      "accuracy": 0.9051315789473684,
+      "f1_macro": 0.9050864200899683,
+      "latency_ms": 4.538925466673997,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 85.07276111400006,
+      "test_inference_sec": 15.394792912999947
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs1000_supp123_seed7",
+      "model": "distilbert-base-uncased",
+      "train_seed": 7,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8957894736842106,
+        "f1_macro": 0.8962407016770108
+      },
+      "accuracy": 0.8957894736842106,
+      "f1_macro": 0.8962407016770108,
+      "latency_ms": 4.804247133294363,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 84.9503748080001,
+      "test_inference_sec": 15.428230287999668
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs1000_supp123_seed8",
+      "model": "distilbert-base-uncased",
+      "train_seed": 8,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9023684210526316,
+        "f1_macro": 0.9021678526141
+      },
+      "accuracy": 0.9023684210526316,
+      "f1_macro": 0.9021678526141,
+      "latency_ms": 5.117902200011788,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 84.99492789999977,
+      "test_inference_sec": 15.439435998000135
+    },
+    {
+      "run": "teacher_distilbert-base-uncased_fs1000_supp123_seed9",
+      "model": "distilbert-base-uncased",
+      "train_seed": 9,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.9063157894736842,
+        "f1_macro": 0.9062147123197071
+      },
+      "accuracy": 0.9063157894736842,
+      "f1_macro": 0.9062147123197071,
+      "latency_ms": 4.4802708999820124,
+      "params": 66956548,
+      "size_mb": 255.42286682128906,
+      "train_time_sec": 85.01425705800011,
+      "test_inference_sec": 15.292419117999998
+    },
+    {
+      "run": "teacher_t5-small_fs1000_supp123_seed3",
+      "model": "t5-small",
+      "train_seed": 3,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.885,
+        "f1_macro": 0.8847543924513497
+      },
+      "accuracy": 0.885,
+      "f1_macro": 0.8847543924513497,
+      "latency_ms": 6.304773133251729,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 66.46833416400023,
+      "test_inference_sec": 15.031630096999834
+    },
+    {
+      "run": "teacher_t5-small_fs1000_supp123_seed4",
+      "model": "t5-small",
+      "train_seed": 4,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8838157894736842,
+        "f1_macro": 0.8833094948461877
+      },
+      "accuracy": 0.8838157894736842,
+      "f1_macro": 0.8833094948461877,
+      "latency_ms": 5.574877866683892,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 64.90335992400014,
+      "test_inference_sec": 14.83868200500001
+    },
+    {
+      "run": "teacher_t5-small_fs1000_supp123_seed5",
+      "model": "t5-small",
+      "train_seed": 5,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.885,
+        "f1_macro": 0.8845555986620597
+      },
+      "accuracy": 0.885,
+      "f1_macro": 0.8845555986620597,
+      "latency_ms": 5.302392999995694,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 65.51175851200014,
+      "test_inference_sec": 14.882811605999905
+    },
+    {
+      "run": "teacher_t5-small_fs1000_supp123_seed6",
+      "model": "t5-small",
+      "train_seed": 6,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8853947368421052,
+        "f1_macro": 0.8850987973463658
+      },
+      "accuracy": 0.8853947368421052,
+      "f1_macro": 0.8850987973463658,
+      "latency_ms": 5.854391700040651,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 65.3192339100001,
+      "test_inference_sec": 14.743675562000135
+    },
+    {
+      "run": "teacher_t5-small_fs1000_supp123_seed7",
+      "model": "t5-small",
+      "train_seed": 7,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8867105263157895,
+        "f1_macro": 0.8865695075497485
+      },
+      "accuracy": 0.8867105263157895,
+      "f1_macro": 0.8865695075497485,
+      "latency_ms": 5.89310556667139,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 63.992922958000236,
+      "test_inference_sec": 14.468629126999986
+    },
+    {
+      "run": "teacher_t5-small_fs1000_supp123_seed8",
+      "model": "t5-small",
+      "train_seed": 8,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8838157894736842,
+        "f1_macro": 0.8833394473634042
+      },
+      "accuracy": 0.8838157894736842,
+      "f1_macro": 0.8833394473634042,
+      "latency_ms": 4.701991266680731,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 62.67578097899968,
+      "test_inference_sec": 13.617507888000091
+    },
+    {
+      "run": "teacher_t5-small_fs1000_supp123_seed9",
+      "model": "t5-small",
+      "train_seed": 9,
+      "support_seed": 123,
+      "n_per_class": 1000,
+      "metrics": {
+        "accuracy": 0.8847368421052632,
+        "f1_macro": 0.8843778212110587
+      },
+      "accuracy": 0.8847368421052632,
+      "f1_macro": 0.8843778212110587,
+      "latency_ms": 5.072404533393637,
+      "params": 35332868,
+      "size_mb": 134.78419494628906,
+      "train_time_sec": 63.52082426800007,
+      "test_inference_sec": 13.696458376999999
+    }
+  ]
+}

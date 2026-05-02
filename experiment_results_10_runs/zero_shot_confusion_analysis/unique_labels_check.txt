@@ -1,0 +1,13 @@
+full_bert-base-uncased_seed0_ep0_lr2e-05_bs16_ml128
+  unique true labels      : [0 1 2 3]
+  unique predicted labels : [0 1 2]
+
+full_distilbert-base-uncased_seed0_ep0_lr2e-05_bs16_ml128
+  unique true labels      : [0 1 2 3]
+  unique predicted labels : [2 3]
+
+full_t5-small_seed0_ep0_lr2e-05_bs16_ml128
+  unique true labels      : [0 1 2 3]
+  unique predicted labels : [0 2 3]
+
+Label consistency across runs: True

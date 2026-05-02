@@ -1,0 +1,41 @@
+{
+  "type": "student",
+  "student_model": "bert-base-uncased",
+  "model": "bert-base-uncased",
+  "teacher_source_type": "ensemble",
+  "teacher_dirs": null,
+  "ensemble_dir": "runs/ensemble_fs10_supp123_seed2",
+  "train_seed": 2,
+  "support_seed": 123,
+  "n_per_class": 10,
+  "tau": 1.0,
+  "alpha": 0.1,
+  "epochs": 5,
+  "lr": 2e-05,
+  "batch_size": 8,
+  "max_len": 128,
+  "metrics": {
+    "accuracy": 0.6161842105263158,
+    "f1_macro": 0.6006450084254507
+  },
+  "prob_interface": "classifier_head",
+  "t5_label_texts": null,
+  "data": {
+    "train_set_size": 120000,
+    "test_set_size": 7600,
+    "support_set_size": 40
+  },
+  "efficiency": {
+    "params": 109485316,
+    "size_mb": 417.66114807128906,
+    "latency_ms": 6.497208933312019,
+    "latency_bench_n": 50,
+    "latency_mode": "classifier_forward",
+    "bench_warmup": 5,
+    "bench_iters": 15,
+    "train_time_sec": null,
+    "test_inference_sec": null,
+    "total_test_inference_est_sec": 49.37878789317135,
+    "device": "cuda"
+  }
+}

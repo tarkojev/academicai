@@ -1,0 +1,45 @@
+Run: full_bert-base-uncased_seed0_ep0_lr2e-05_bs16_ml128
+Accuracy : 0.329737
+Macro-F1 : 0.252736
+
+True class counts:
+  World: 1900
+  Sports: 1900
+  Business: 1900
+  Sci/Tech: 1900
+
+Predicted class counts:
+  World: 4972
+  Sports: 381
+  Business: 2247
+  Sci/Tech: 0
+
+Raw confusion matrix:
+[[1378   60  462    0]
+ [1560  167  173    0]
+ [ 873   66  961    0]
+ [1161   88  651    0]]
+
+Row-normalized confusion matrix (recall view):
+[[0.7253 0.0316 0.2432 0.    ]
+ [0.8211 0.0879 0.0911 0.    ]
+ [0.4595 0.0347 0.5058 0.    ]
+ [0.6111 0.0463 0.3426 0.    ]]
+
+Column-normalized confusion matrix (precision view):
+[[0.2772 0.1575 0.2056 0.    ]
+ [0.3138 0.4383 0.077  0.    ]
+ [0.1756 0.1732 0.4277 0.    ]
+ [0.2335 0.231  0.2897 0.    ]]
+
+Classification report:
+              precision    recall  f1-score   support
+
+       World     0.2772    0.7253    0.4010      1900
+      Sports     0.4383    0.0879    0.1464      1900
+    Business     0.4277    0.5058    0.4635      1900
+    Sci/Tech     0.0000    0.0000    0.0000      1900
+
+    accuracy                         0.3297      7600
+   macro avg     0.2858    0.3297    0.2527      7600
+weighted avg     0.2858    0.3297    0.2527      7600

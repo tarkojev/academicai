@@ -1,0 +1,40 @@
+{
+  "type": "ensemble",
+  "teacher_dirs": [
+    "runs/full_bert-base-uncased_seed0_ep2_lr2e-05_bs16_ml128",
+    "runs/full_distilbert-base-uncased_seed0_ep2_lr2e-05_bs16_ml128",
+    "runs/full_t5-small_seed0_ep2_lr2e-05_bs16_ml128"
+  ],
+  "also_support": false,
+  "metrics": {
+    "accuracy": 0.9494736842105264,
+    "f1_macro": 0.9494868967883673
+  },
+  "metrics_test": {
+    "accuracy": 0.9494736842105264,
+    "f1_macro": 0.9494868967883673
+  },
+  "metrics_support": null,
+  "support_seed": null,
+  "n_per_class": null,
+  "label_space": null,
+  "teacher_models": [
+    "bert-base-uncased",
+    "distilbert-base-uncased",
+    "t5-small"
+  ],
+  "teacher_train_seeds": [
+    0,
+    0,
+    0
+  ],
+  "prob_interface": "ensemble_avg_probs",
+  "data": {
+    "test_set_size": 7600,
+    "support_set_size": null
+  },
+  "efficiency": {
+    "latency_ms": 14.441070966434683,
+    "note": "Sequential inference: ensemble latency approximated as sum of teacher forward passes"
+  }
+}
