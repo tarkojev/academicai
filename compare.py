@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import pandas as pd
 
-# Constants for run type ordering, marker styles, and colours for visualization
+# Constants for run type ordering, marker styles, and colors for visualization
 TYPE_ORDER = {
     "zero-shot": 0,
     "full": 1,
@@ -54,8 +54,8 @@ ENSEMBLE_FS_SIZES = {
     1000: 190,
 }
 
-# Colours
-MODEL_COLOURS = {
+# colors
+MODEL_colorS = {
     "BERT": "#4C78A8",
     "DistilBERT": "#F58518",
     "T5-small": "#54A24B",
@@ -503,7 +503,7 @@ def build_student_table_rows(summary_rows: List[Dict[str, Any]]) -> List[Dict[st
                 "rank_in_section": idx + 1,
                 "is_best_accuracy": idx == best_acc_idx,
                 "is_best_latency": idx == best_lat_idx,
-                "row_colour": (
+                "row_color": (
                     "green!15" if idx == best_acc_idx
                     else "blue!12" if idx == best_lat_idx
                     else ""
@@ -572,8 +572,8 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
             s=sub["plot_size"],
             alpha=0.75,
             marker=plot_marker,
-            c=MODEL_COLOURS.get(str(model_family), MODEL_COLOURS["Other"]),
-            edgecolours="black",
+            c=MODEL_colorS.get(str(model_family), MODEL_colorS["Other"]),
+            edgecolors="black",
             linewidths=0.6,
         )
     ax.set_title("Efficiency Trade-off: Accuracy vs Latency")
@@ -592,23 +592,23 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
                 [0], [0],
                 marker=marker,
                 linestyle="",
-                colour="w",
-                markerfacecolour="white",
-                markeredgecolour="black",
+                color="w",
+                markerfacecolor="white",
+                markeredgecolor="black",
                 markersize=10,
                 label=t
             )
         )
     present_models = plot_df["model_family"].dropna().unique()
-    ordered_models = [m for m in MODEL_COLOURS.keys() if m in present_models]
+    ordered_models = [m for m in MODEL_colorS.keys() if m in present_models]
     model_handles = [
         Line2D(
             [0], [0],
             marker="o",
             linestyle="",
-            colour="w",
-            markerfacecolour=MODEL_COLOURS[m],
-            markeredgecolour="black",
+            color="w",
+            markerfacecolor=MODEL_colorS[m],
+            markeredgecolor="black",
             markersize=10,
             label=m
         )
@@ -627,9 +627,9 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
                     [0], [0],
                     marker="o",
                     linestyle="",
-                    colour="w",
-                    markerfacecolour="white",
-                    markeredgecolour="black",
+                    color="w",
+                    markerfacecolor="white",
+                    markeredgecolor="black",
                     markersize=(ENSEMBLE_FS_SIZES[fs] ** 0.5) / 1.6,
                     label=f"FS={fs}"
                 )
@@ -647,18 +647,18 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
                     [0], [0],
                     marker=STUDENT_FS_MARKERS[fs],
                     linestyle="",
-                    colour="w",
-                    markerfacecolour="white",
-                    markeredgecolour="black",
+                    color="w",
+                    markerfacecolor="white",
+                    markeredgecolor="black",
                     markersize=10,
                     label=f"FS={fs}"
                 )
             )
     legend_style = {
         "frameon": True,
-        "facecolour": "white",
+        "facecolor": "white",
         "framealpha": 0.95,
-        "edgecolour": "black",
+        "edgecolor": "black",
         "borderpad": 0.6,
         "labelspacing": 0.4,
     }
@@ -673,7 +673,7 @@ def save_efficiency_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_path: 
     if model_handles:
         fig.legend(
             handles=model_handles,
-            title="Model (Colour)",
+            title="Model (color)",
             loc="upper left",
             bbox_to_anchor=(0.80, 0.60),
             **legend_style
@@ -750,8 +750,8 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
             s=sub["plot_size"],
             alpha=0.8,
             marker=plot_marker,
-            c=MODEL_COLOURS.get(str(model_family), MODEL_COLOURS["Other"]),
-            edgecolours="black",
+            c=MODEL_colorS.get(str(model_family), MODEL_colorS["Other"]),
+            edgecolors="black",
             linewidths=0.7,
         )
     ax.set_title("Teacher Scarcity Trade-off: Zero-shot, Full, and Few-shot Teachers")
@@ -769,9 +769,9 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
                 [0], [0],
                 marker=TYPE_MARKERS["zero-shot"],
                 linestyle="",
-                colour="w",
-                markerfacecolour="white",
-                markeredgecolour="black",
+                color="w",
+                markerfacecolor="white",
+                markeredgecolor="black",
                 markersize=10,
                 label="zero-shot"
             )
@@ -782,22 +782,22 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
                 [0], [0],
                 marker=TYPE_MARKERS["full"],
                 linestyle="",
-                colour="w",
-                markerfacecolour="white",
-                markeredgecolour="black",
+                color="w",
+                markerfacecolor="white",
+                markeredgecolor="black",
                 markersize=10,
                 label="full"
             )
         )
-    ordered_models = [m for m in MODEL_COLOURS.keys() if m in present_models]
+    ordered_models = [m for m in MODEL_colorS.keys() if m in present_models]
     model_handles = [
         Line2D(
             [0], [0],
             marker="o",
             linestyle="",
-            colour="w",
-            markerfacecolour=MODEL_COLOURS[m],
-            markeredgecolour="black",
+            color="w",
+            markerfacecolor=MODEL_colorS[m],
+            markeredgecolor="black",
             markersize=10,
             label=m
         )
@@ -815,18 +815,18 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
                     [0], [0],
                     marker=TEACHER_FS_MARKERS[fs],
                     linestyle="",
-                    colour="w",
-                    markerfacecolour="white",
-                    markeredgecolour="black",
+                    color="w",
+                    markerfacecolor="white",
+                    markeredgecolor="black",
                     markersize=10,
                     label=f"FS={fs}"
                 )
             )
     legend_style = {
         "frameon": True,
-        "facecolour": "white",
+        "facecolor": "white",
         "framealpha": 0.95,
-        "edgecolour": "black",
+        "edgecolor": "black",
         "borderpad": 0.6,
         "labelspacing": 0.4,
     }
@@ -841,7 +841,7 @@ def save_teacher_baseline_tradeoff_plot(summary_rows: List[Dict[str, Any]], out_
     if model_handles:
         fig.legend(
             handles=model_handles,
-            title="Model (Colour)",
+            title="Model (color)",
             loc="upper left",
             bbox_to_anchor=(0.80, 0.58),
             **legend_style
